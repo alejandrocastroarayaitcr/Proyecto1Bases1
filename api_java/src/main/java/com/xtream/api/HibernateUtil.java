@@ -14,13 +14,20 @@ public class HibernateUtil {
         }
     }
 
+    /**
+     * This will allow the generic repo to get a session
+     * @return a <code>SessionFactory</code>
+     */
     // This will allow the generic repo to get a session
     public static SessionFactory getSessionFactory(){
         return sessionFactory;
     }
 
+    /**
+     * Closes caches and connections
+     */
     public static void shutDown(){
-        //closes caches and connections
+        //
         getSessionFactory().close();
     }
 }
