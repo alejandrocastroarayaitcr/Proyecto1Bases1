@@ -1,5 +1,3 @@
-ALTER TABLE subscriptions MODIFY idSubscriptions int NOT NULL AUTO_INCREMENT;
-
 DROP PROCEDURE IF EXISTS registrar_suscripcion;
 DELIMITER $$
 
