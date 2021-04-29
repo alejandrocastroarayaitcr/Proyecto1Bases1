@@ -16,6 +16,7 @@ BEGIN
   set opt= opcion;
   set cantidad=cant;
 	case opt
+		-- Ratings
 		when 1 then
         
 			WHILE cantidad > 0 DO
@@ -43,7 +44,8 @@ BEGIN
 				SET cantidad = cantidad - 1;
             
 		  END WHILE;
-          
+	  
+      -- Fill blacklist
 	  when 2 then
 		WHILE cantidad > 0 DO
 
@@ -87,7 +89,7 @@ BEGIN
 				 rand() * 
 					(unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO post_time ;
 		
-			set @live= CEILING (rand()*1);
+			set @live= floor(rand()*2);
             
             if @live=1 then
 				set @end_time= null;
@@ -100,15 +102,6 @@ BEGIN
                 set @avrg_viewers=rand()*10000;
 				set @max_viewers=@avrg_viewers+rand()*2000;
                 set @viewers=NULL;
-                
-                set @url= concat("htts:\WWW.URL",rand()*999999999);
-				set @size= rand()*10000;
-				set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
-				SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
-				SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
-				insert into videos (`idvideo`,`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
-				values(@url, @size, @length, @quality, @type, last_id_in_streams);
-				SET cantidad = cantidad - 1;
                 
             end if;
             
@@ -133,16 +126,29 @@ BEGIN
             
             SET @last_id_in_streams = LAST_INSERT_ID();
             
-            set @ntags= CEILING (rand()*2);
+            set @ntags= floor(rand()*3);
             while @ntags>0 do
                 SELECT idTags INTO @tag FROM tags ORDER BY RAND() LIMIT 1;
-                select @last_id_in_streams;
                 insert into TagsPerStream
                 values (@tag, @last_id_in_streams);
                 set @ntags= @ntags-1;
             end while;
             
+            if @live=0 then
+				set @url= concat("htts:\WWW.URL",rand()*999999999);
+				set @size= rand()*10000;
+				set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
+				SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
+				SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
+				insert into Videos (`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
+				values(@url, @size, @length, @quality, @type, @last_id_in_streams);
+            end if;
+            
+            SET cantidad = cantidad - 1;
+            
 	 END WHILE;
+     
+     -- Fill Stream History
 	when 4 then
 		WHILE cantidad > 0 DO
         
@@ -199,10 +205,11 @@ END //
 
 delimiter ;
 
+call filldata(1,10);
+call filldata(2,3);
+call filldata(3,25);
+call filldata(4,15);
 
 
-call filldata(3,5);
 
-select * from streams;
-select * from TagsPerStream;
 
