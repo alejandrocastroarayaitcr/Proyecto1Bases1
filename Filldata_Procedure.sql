@@ -126,23 +126,23 @@ BEGIN
             
             SET @last_id_in_streams = LAST_INSERT_ID();
             
-            set @ntags= floor(rand()*3);
-            while @ntags>0 do
-                SELECT idTags INTO @tag FROM tags ORDER BY RAND() LIMIT 1;
-                insert into TagsPerStream
-                values (@tag, @last_id_in_streams);
-                set @ntags= @ntags-1;
-            end while;
+             set @ntags= floor(rand()*3);
+             while @ntags>0 do
+                 SELECT idTags INTO @tag FROM tags ORDER BY RAND() LIMIT 1;
+                 insert into TagsPerStream (`idTags`,`idStreams`)
+                 values (@tag, @last_id_in_streams);
+                 set @ntags= @ntags-1;
+             end while;
             
-            if @live=0 then
-				set @url= concat("htts:\WWW.URL",rand()*999999999);
-				set @size= rand()*10000;
-				set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
-				SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
-				SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
-				insert into Videos (`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
-				values(@url, @size, @length, @quality, @type, @last_id_in_streams);
-            end if;
+             if @live=0 then
+				 set @url= concat("htts:\WWW.URL",rand()*999999999);
+				 set @size= rand()*10000;
+				 set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
+				 SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
+				 SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
+				 insert into Videos (`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
+				 values(@url, @size, @length, @quality, @type, @last_id_in_streams);
+             end if;
             
             SET cantidad = cantidad - 1;
             
@@ -155,6 +155,7 @@ BEGIN
 			SELECT idStreams INTO @stream_id FROM streams ORDER BY RAND() LIMIT 1;
             SELECT idChannel INTO @streamer_id FROM streams where idStreams=@stream_id;
             SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+            SELECT idStreamEventType INTO @EventType FROM StreamEventType ORDER BY RAND() LIMIT 1;
             
             while @streamer_id=@user_id do
 				SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
@@ -195,8 +196,8 @@ BEGIN
 				end while;
 			end if;
 			
-            insert into UserStreamHistory (`date`, `exitDate`, `idUser`,`idStreams`)
-            values(@start_Date, @exit_Date, @user_id, @stream_id);
+            insert into StreamLog (`PostTime`, `EndTime`, `idStreams`,`idUser`, `idStreamEventType`)
+            values(@start_Date, @exit_Date, @stream_id, @user_id, @EventType);
 			SET cantidad = cantidad - 1;
             
 		END WHILE;
@@ -204,12 +205,11 @@ BEGIN
 END //
 
 delimiter ;
-
 call filldata(1,10);
 call filldata(2,3);
-call filldata(3,25);
+call filldata(3,30);
 call filldata(4,15);
-
-
+select * from Videos;
+select * from streams;
 
 

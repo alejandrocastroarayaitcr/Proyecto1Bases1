@@ -1,4 +1,4 @@
-USE `proyecto1_BD` ;
+USE `XtreamDB` ;
 
 -- Script de llenado
 insert into users (idUser, firstname, lastname, username, email, verified, password, checksum)
@@ -39,6 +39,8 @@ values  ("144"), ("240"), ("360"), ("480"),("720"),("1080");
 insert into AllowedDatatypes(`datatype`)
 values  ("MP3"), ("MP4"), ("MPEG-4"), ("MOV");
 
+insert into StreamEventType(`name`)
+values ("Enter"),("Leave"),("Donate");
 
 
 

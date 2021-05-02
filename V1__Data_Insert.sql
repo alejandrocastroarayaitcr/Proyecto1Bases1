@@ -5,20 +5,20 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema proyecto1_BD
+-- Schema XtreamDB
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema proyecto1_BD
+-- Schema XtreamDB
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `proyecto1_BD` DEFAULT CHARACTER SET utf8 ;
-USE `proyecto1_BD` ;
+CREATE SCHEMA IF NOT EXISTS `XtreamDB` DEFAULT CHARACTER SET utf8 ;
+USE `XtreamDB` ;
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`users`
+-- Table `XtreamDB`.`users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`users` (
-  `idUser` BIGINT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`users` (
+  `idUser` BIGINT NOT NULL AUTO_INCREMENT,
   `firstname` VARCHAR(70) NOT NULL,
   `lastname` VARCHAR(70) NOT NULL,
   `username` VARCHAR(70) NOT NULL,
@@ -31,10 +31,10 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`merchants`
+-- Table `XtreamDB`.`merchants`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`merchants` (
-  `idMerchants` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`merchants` (
+  `idMerchants` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(55) NOT NULL,
   `merchantURL` VARCHAR(76) NOT NULL,
   `iconURL` VARCHAR(76) NOT NULL,
@@ -44,9 +44,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`paymentStatus`
+-- Table `XtreamDB`.`paymentStatus`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`paymentStatus` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentStatus` (
   `idPaymentStatus` INT NOT NULL,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idPaymentStatus`))
@@ -54,10 +54,10 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`paymentAttempts`
+-- Table `XtreamDB`.`paymentAttempts`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`paymentAttempts` (
-  `idPaymentAttempts` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
+  `idPaymentAttempts` INT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `amount` DECIMAL(10,2) NOT NULL,
   `currencySymbol` VARCHAR(45) NOT NULL,
@@ -78,27 +78,27 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`paymentAttempts` (
   INDEX `fk_paymentAttempts_paymentStatus1_idx` (`idpaymentStatus` ASC) VISIBLE,
   CONSTRAINT `fk_paymentAttempts_users`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_paymentAttempts_merchants1`
     FOREIGN KEY (`idmerchants`)
-    REFERENCES `proyecto1_BD`.`merchants` (`idMerchants`)
+    REFERENCES `XtreamDB`.`merchants` (`idMerchants`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_paymentAttempts_paymentStatus1`
     FOREIGN KEY (`idpaymentStatus`)
-    REFERENCES `proyecto1_BD`.`paymentStatus` (`idPaymentStatus`)
+    REFERENCES `XtreamDB`.`paymentStatus` (`idPaymentStatus`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`recurrenceType`
+-- Table `XtreamDB`.`recurrenceType`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`recurrenceType` (
-  `idRecurrenceType` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`recurrenceType` (
+  `idRecurrenceType` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(55) NOT NULL,
   `valueToAdd` VARCHAR(45) NOT NULL,
   `datePart` VARCHAR(45) NULL,
@@ -107,10 +107,10 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`tierLevel`
+-- Table `XtreamDB`.`tierLevel`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`tierLevel` (
-  `idTierLevel` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`tierLevel` (
+  `idTierLevel` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `description` VARCHAR(75) NOT NULL,
   `price` DECIMAL(10,2) NOT NULL,
@@ -119,41 +119,106 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`subscriptions`
+-- Table `XtreamDB`.`transactionType`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`subscriptions` (
-  `idSubscriptions` INT NOT NULL,
-  `title` VARCHAR(55) NOT NULL,
-  `descriptionHTML` VARCHAR(128) NOT NULL,
-  `startTime` DATETIME NOT NULL,
-  `endTIme` DATETIME NOT NULL,
-  `enabled` BIT NOT NULL,
-  `iconURL` VARCHAR(76) NOT NULL,
-  `xtreamRevenue` DECIMAL(10,2) NOT NULL,
-  `idRecurrenceType` INT NOT NULL,
-  `idTierLevel` INT NOT NULL,
-  `checksum` VARBINARY(300) NOT NULL,
-  PRIMARY KEY (`idSubscriptions`),
-  INDEX `fk_subscriptions_recurrenceType1_idx` (`idRecurrenceType` ASC) VISIBLE,
-  INDEX `fk_subscriptions_tierLevel1_idx` (`idTierLevel` ASC) VISIBLE,
-  CONSTRAINT `fk_subscriptions_recurrenceType1`
-    FOREIGN KEY (`idRecurrenceType`)
-    REFERENCES `proyecto1_BD`.`recurrenceType` (`idRecurrenceType`)
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`transactionType` (
+  `idTransactionType` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idTransactionType`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`transactionSubType`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`transactionSubType` (
+  `idTransactionSubType` INT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idTransactionSubType`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`paymentTransactions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentTransactions` (
+  `idPaymentTransactions` BIGINT NOT NULL AUTO_INCREMENT,
+  `postTime` DATETIME NOT NULL,
+  `description` VARCHAR(45) NOT NULL,
+  `username` VARCHAR(45) NOT NULL,
+  `computerName` VARCHAR(45) NOT NULL,
+  `ipAddress` VARCHAR(45) NOT NULL,
+  `checksum` VARCHAR(45) NULL,
+  `amount` DECIMAL(10,2) NULL,
+  `referenceID` BIGINT NOT NULL,
+  `idUser` BIGINT NOT NULL,
+  `idTransactionType` INT NOT NULL,
+  `idTransactionSubType` INT NOT NULL,
+  PRIMARY KEY (`idPaymentTransactions`),
+  INDEX `fk_paymentTransactions_users1_idx` (`idUser` ASC) VISIBLE,
+  INDEX `fk_paymentTransactions_transactionType1_idx` (`idTransactionType` ASC) VISIBLE,
+  INDEX `fk_paymentTransactions_transactionSubType1_idx` (`idTransactionSubType` ASC) VISIBLE,
+  CONSTRAINT `fk_paymentTransactions_users1`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_subscriptions_tierLevel1`
-    FOREIGN KEY (`idTierLevel`)
-    REFERENCES `proyecto1_BD`.`tierLevel` (`idTierLevel`)
+  CONSTRAINT `fk_paymentTransactions_transactionType1`
+    FOREIGN KEY (`idTransactionType`)
+    REFERENCES `XtreamDB`.`transactionType` (`idTransactionType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_paymentTransactions_transactionSubType1`
+    FOREIGN KEY (`idTransactionSubType`)
+    REFERENCES `XtreamDB`.`transactionSubType` (`idTransactionSubType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`partnerProgram`
+-- Table `XtreamDB`.`subscriptions`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`partnerProgram` (
-  `idPartnerProgram` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`subscriptions` (
+  `idSubscriptions` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(55) NOT NULL,
+  `descriptionHTML` VARCHAR(128) NOT NULL,
+  `startTime` DATETIME NOT NULL,
+  `endTime` DATETIME NOT NULL,
+  `enabled` BIT NOT NULL,
+  `iconURL` VARCHAR(76) NOT NULL,
+  `checksum` VARBINARY(300) NOT NULL,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `idRecurrenceType` INT NOT NULL,
+  `idTierLevel` INT NOT NULL,
+  `idPaymentTransactions` BIGINT NOT NULL,
+  PRIMARY KEY (`idSubscriptions`),
+  INDEX `fk_subscriptions_recurrenceType1_idx` (`idRecurrenceType` ASC) VISIBLE,
+  INDEX `fk_subscriptions_tierLevel1_idx` (`idTierLevel` ASC) VISIBLE,
+  INDEX `fk_subscriptions_paymentTransactions1_idx` (`idPaymentTransactions` ASC) VISIBLE,
+  CONSTRAINT `fk_subscriptions_recurrenceType1`
+    FOREIGN KEY (`idRecurrenceType`)
+    REFERENCES `XtreamDB`.`recurrenceType` (`idRecurrenceType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_subscriptions_tierLevel1`
+    FOREIGN KEY (`idTierLevel`)
+    REFERENCES `XtreamDB`.`tierLevel` (`idTierLevel`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_subscriptions_paymentTransactions1`
+    FOREIGN KEY (`idPaymentTransactions`)
+    REFERENCES `XtreamDB`.`paymentTransactions` (`idPaymentTransactions`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`partnerProgram`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`partnerProgram` (
+  `idPartnerProgram` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `description` VARCHAR(75) NOT NULL,
   PRIMARY KEY (`idPartnerProgram`))
@@ -161,13 +226,14 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`Channel`
+-- Table `XtreamDB`.`Channel`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`Channel` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`Channel` (
   `idChannel` BIGINT NOT NULL AUTO_INCREMENT,
-  `displayName` VARCHAR(70) NOT NULL,
+  `displayName` NVARCHAR(70) NOT NULL,
   `description` NVARCHAR(500) NULL,
   `pictureURL` VARCHAR(76) NULL,
+  `currentSubscriberAmount` INT NULL,
   `idUser` BIGINT NOT NULL,
   `idPartnerProgram` INT NULL,
   PRIMARY KEY (`idChannel`),
@@ -175,22 +241,22 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`Channel` (
   INDEX `fk_Channel_partnerProgram1_idx` (`idPartnerProgram` ASC) VISIBLE,
   CONSTRAINT `fk_Channel_users1`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Channel_partnerProgram1`
     FOREIGN KEY (`idPartnerProgram`)
-    REFERENCES `proyecto1_BD`.`partnerProgram` (`idPartnerProgram`)
+    REFERENCES `XtreamDB`.`partnerProgram` (`idPartnerProgram`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`subscriptionsPerUser`
+-- Table `XtreamDB`.`subscriptionsPerUser`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`subscriptionsPerUser` (
-  `idUser` BIGINT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`subscriptionsPerUser` (
+  `idUser` BIGINT NOT NULL AUTO_INCREMENT,
   `idSubscriptions` INT NOT NULL,
   `idChannel` BIGINT NOT NULL,
   `postTime` DATETIME NOT NULL,
@@ -201,37 +267,39 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`subscriptionsPerUser` (
   INDEX `fk_subscriptionsPerUser_Channel1_idx` (`idChannel` ASC) VISIBLE,
   CONSTRAINT `fk_subscriptionsPerUser_users1`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_subscriptionsPerUser_subscriptions1`
     FOREIGN KEY (`idSubscriptions`)
-    REFERENCES `proyecto1_BD`.`subscriptions` (`idSubscriptions`)
+    REFERENCES `XtreamDB`.`subscriptions` (`idSubscriptions`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_subscriptionsPerUser_Channel1`
     FOREIGN KEY (`idChannel`)
-    REFERENCES `proyecto1_BD`.`Channel` (`idChannel`)
+    REFERENCES `XtreamDB`.`Channel` (`idChannel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`benefits`
+-- Table `XtreamDB`.`benefits`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`benefits` (
-  `idBenefits` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`benefits` (
+  `idBenefits` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(55) NOT NULL,
   `description` VARCHAR(75) NOT NULL,
+  `datatype` VARCHAR(45) NULL,
+  `value` INT NULL,
   PRIMARY KEY (`idBenefits`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`categories`
+-- Table `XtreamDB`.`categories`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`categories` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`categories` (
   `idCategories` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(70) NOT NULL,
   PRIMARY KEY (`idCategories`))
@@ -239,9 +307,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`VideoQuality`
+-- Table `XtreamDB`.`VideoQuality`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`VideoQuality` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`VideoQuality` (
   `idvideoQuality` INT NOT NULL AUTO_INCREMENT,
   `quality` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`idvideoQuality`))
@@ -249,9 +317,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`AllowedDatatypes`
+-- Table `XtreamDB`.`AllowedDatatypes`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`AllowedDatatypes` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`AllowedDatatypes` (
   `idalloweddatatype` INT NOT NULL AUTO_INCREMENT,
   `datatype` VARCHAR(50) NULL,
   PRIMARY KEY (`idalloweddatatype`))
@@ -259,9 +327,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`Videos`
+-- Table `XtreamDB`.`Videos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`Videos` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`Videos` (
   `idvideo` BIGINT NOT NULL AUTO_INCREMENT,
   `url` VARCHAR(300) NOT NULL,
   `size` DECIMAL(10,2) NOT NULL,
@@ -275,26 +343,26 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`Videos` (
   INDEX `fk_Videos_streams1` (`idStreams` ASC) VISIBLE,
   CONSTRAINT `fk_Videos_VideoQuality1`
     FOREIGN KEY (`videoQualityId`)
-    REFERENCES `proyecto1_BD`.`VideoQuality` (`idvideoQuality`)
+    REFERENCES `XtreamDB`.`VideoQuality` (`idvideoQuality`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Videos_AllowedDatatypes1`
     FOREIGN KEY (`alloweddatatypeid`)
-    REFERENCES `proyecto1_BD`.`AllowedDatatypes` (`idalloweddatatype`)
+    REFERENCES `XtreamDB`.`AllowedDatatypes` (`idalloweddatatype`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Videos_streams1`
     FOREIGN KEY (`idStreams`)
-    REFERENCES `proyecto1_BD`.`streams` (`idStreams`)
+    REFERENCES `XtreamDB`.`streams` (`idStreams`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`streams`
+-- Table `XtreamDB`.`streams`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`streams` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`streams` (
   `idStreams` BIGINT NOT NULL AUTO_INCREMENT,
   `title` NVARCHAR(200) NOT NULL,
   `viewers` BIGINT NULL,
@@ -312,107 +380,66 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`streams` (
   INDEX `fk_streams_Channel1_idx` (`idChannel` ASC) VISIBLE,
   CONSTRAINT `fk_streams_categories1`
     FOREIGN KEY (`idCategories`)
-    REFERENCES `proyecto1_BD`.`categories` (`idCategories`)
+    REFERENCES `XtreamDB`.`categories` (`idCategories`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_streams_Channel1`
     FOREIGN KEY (`idChannel`)
-    REFERENCES `proyecto1_BD`.`Channel` (`idChannel`)
+    REFERENCES `XtreamDB`.`Channel` (`idChannel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`UserStreamHistory`
+-- Table `XtreamDB`.`tags`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`UserStreamHistory` (
-  `idUserStreamHistory` BIGINT NOT NULL AUTO_INCREMENT,
-  `date` DATETIME NOT NULL,
-  `exitDate` DATETIME NULL,
-  `idUser` BIGINT NOT NULL,
-  `idStreams` BIGINT NOT NULL,
-  PRIMARY KEY (`idUserStreamHistory`),
-  INDEX `fk_userRecord_users1_idx` (`idUser` ASC) VISIBLE,
-  INDEX `fk_userRecord_streams1_idx` (`idStreams` ASC) VISIBLE,
-  CONSTRAINT `fk_userRecord_users1`
-    FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_userRecord_streams1`
-    FOREIGN KEY (`idStreams`)
-    REFERENCES `proyecto1_BD`.`streams` (`idStreams`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `proyecto1_BD`.`tags`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`tags` (
-  `idTags` INT NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`tags` (
+  `idTags` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idTags`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`TagsPerStream`
+-- Table `XtreamDB`.`TagsPerStream`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`TagsPerStream` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`TagsPerStream` (
+  `idTagsPerStream` INT NOT NULL AUTO_INCREMENT,
   `idTags` INT NOT NULL,
   `idStreams` BIGINT NOT NULL,
+  PRIMARY KEY (`idTagsPerStream`),
   INDEX `fk_TagsXCategories_tags1_idx` (`idTags` ASC) VISIBLE,
   INDEX `fk_TagsPerStream_streams1_idx` (`idStreams` ASC) VISIBLE,
   CONSTRAINT `fk_TagsXCategories_tags1`
     FOREIGN KEY (`idTags`)
-    REFERENCES `proyecto1_BD`.`tags` (`idTags`)
+    REFERENCES `XtreamDB`.`tags` (`idTags`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_TagsPerStream_streams1`
     FOREIGN KEY (`idStreams`)
-    REFERENCES `proyecto1_BD`.`streams` (`idStreams`)
+    REFERENCES `XtreamDB`.`streams` (`idStreams`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`supportAssociate`
+-- Table `XtreamDB`.`roles`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`supportAssociate` (
-  `idSupportAssociate` INT NOT NULL,
-  `name` VARCHAR(50) NOT NULL,
-  `lastname` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`idSupportAssociate`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `proyecto1_BD`.`roles`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`roles` (
-  `idRoles` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`roles` (
+  `idRoles` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(55) NOT NULL,
   `description` VARCHAR(76) NOT NULL,
-  `idSupportAssociate` INT NOT NULL,
-  PRIMARY KEY (`idRoles`),
-  INDEX `fk_roles_supportAssociate1_idx` (`idSupportAssociate` ASC) VISIBLE,
-  CONSTRAINT `fk_roles_supportAssociate1`
-    FOREIGN KEY (`idSupportAssociate`)
-    REFERENCES `proyecto1_BD`.`supportAssociate` (`idSupportAssociate`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  PRIMARY KEY (`idRoles`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`permissions`
+-- Table `XtreamDB`.`permissions`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`permissions` (
-  `idPermissions` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`permissions` (
+  `idPermissions` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(55) NOT NULL,
   `description` VARCHAR(76) NOT NULL,
   `CODE` VARCHAR(76) NOT NULL,
@@ -423,10 +450,10 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`permissionsPerRole`
+-- Table `XtreamDB`.`permissionsPerRole`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`permissionsPerRole` (
-  `idPermissionsPerRole` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`permissionsPerRole` (
+  `idPermissionsPerRole` INT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `deleted` BIT NOT NULL,
   `lastUpdate` DATETIME NULL,
@@ -439,132 +466,148 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`permissionsPerRole` (
   INDEX `fk_permissionsPerRole_roles1_idx` (`idRoles` ASC) VISIBLE,
   CONSTRAINT `fk_permissionsPerRole_permissions1`
     FOREIGN KEY (`idPermissions`)
-    REFERENCES `proyecto1_BD`.`permissions` (`idPermissions`)
+    REFERENCES `XtreamDB`.`permissions` (`idPermissions`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_permissionsPerRole_roles1`
     FOREIGN KEY (`idRoles`)
-    REFERENCES `proyecto1_BD`.`roles` (`idRoles`)
+    REFERENCES `XtreamDB`.`roles` (`idRoles`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`rolesPerUser`
+-- Table `XtreamDB`.`rolesPerAssociate`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`rolesPerUser` (
-  `idRolesPerUser` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`rolesPerAssociate` (
+  `idRolesPerAssociate` INT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `deleted` BIT NOT NULL,
   `user` VARCHAR(45) NOT NULL,
   `ipAddress` BIGINT NOT NULL,
   `checksum` VARCHAR(45) NOT NULL,
   `lastUpdate` DATETIME NULL,
-  `roles_idRoles` INT NOT NULL,
-  PRIMARY KEY (`idRolesPerUser`),
-  INDEX `fk_rolesPerUser_roles1_idx` (`roles_idRoles` ASC) VISIBLE,
+  `idRoles` INT NOT NULL,
+  `idUser` BIGINT NOT NULL,
+  PRIMARY KEY (`idRolesPerAssociate`),
+  INDEX `fk_rolesPerUser_roles1_idx` (`idRoles` ASC) VISIBLE,
+  INDEX `fk_rolesPerAssociate_users1_idx` (`idUser` ASC) VISIBLE,
   CONSTRAINT `fk_rolesPerUser_roles1`
-    FOREIGN KEY (`roles_idRoles`)
-    REFERENCES `proyecto1_BD`.`roles` (`idRoles`)
+    FOREIGN KEY (`idRoles`)
+    REFERENCES `XtreamDB`.`roles` (`idRoles`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_rolesPerAssociate_users1`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`permissionsPerUser`
+-- Table `XtreamDB`.`permissionsPerUser`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`permissionsPerUser` (
-  `idPermissionsPerUser` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`permissionsPerUser` (
+  `idPermissionsPerAssociate` INT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `deleted` BIT NOT NULL,
   `lastUpdate` DATETIME NULL,
   `userInCharge` VARCHAR(45) NOT NULL,
   `checksum` VARCHAR(45) NOT NULL,
   `idPermissions` INT NOT NULL,
-  `idSupportAssociate` INT NOT NULL,
-  PRIMARY KEY (`idPermissionsPerUser`),
+  `idUser` BIGINT NOT NULL,
+  PRIMARY KEY (`idPermissionsPerAssociate`),
   INDEX `fk_permissionsPerUser_permissions1_idx` (`idPermissions` ASC) VISIBLE,
-  INDEX `fk_permissionsPerUser_supportAssociate1_idx` (`idSupportAssociate` ASC) VISIBLE,
+  INDEX `fk_permissionsPerAssociate_users1_idx` (`idUser` ASC) VISIBLE,
   CONSTRAINT `fk_permissionsPerUser_permissions1`
     FOREIGN KEY (`idPermissions`)
-    REFERENCES `proyecto1_BD`.`permissions` (`idPermissions`)
+    REFERENCES `XtreamDB`.`permissions` (`idPermissions`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_permissionsPerUser_supportAssociate1`
-    FOREIGN KEY (`idSupportAssociate`)
-    REFERENCES `proyecto1_BD`.`supportAssociate` (`idSupportAssociate`)
+  CONSTRAINT `fk_permissionsPerAssociate_users1`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`ratings`
+-- Table `XtreamDB`.`ratings`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`ratings` (
-  `idRating` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`ratings` (
+  `idRatings` INT NOT NULL AUTO_INCREMENT,
   `rating` INT NOT NULL,
   `postTime` DATETIME NOT NULL,
   `idUser` BIGINT NOT NULL,
   `idStreamer` BIGINT NOT NULL,
   `checksum` VARCHAR(45) NOT NULL,
   `ipAddress` BIGINT NOT NULL,
-  PRIMARY KEY (`idRating`),
+  PRIMARY KEY (`idRatings`),
   INDEX `fk_ratings_users1_idx` (`idUser` ASC) VISIBLE,
   INDEX `fk_ratings_users2_idx` (`idStreamer` ASC) VISIBLE,
   CONSTRAINT `fk_ratings_users1`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ratings_users2`
     FOREIGN KEY (`idStreamer`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`benefitsPerTierLevel`
+-- Table `XtreamDB`.`benefitsPerTierLevel`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`benefitsPerTierLevel` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`benefitsPerTierLevel` (
+  `idBenefitsPerTierLevel` INT NOT NULL AUTO_INCREMENT,
   `idTierLevel` INT NOT NULL,
   `idBenefits` INT NOT NULL,
   INDEX `fk_benefitsPerTierLevel_tierLevel1_idx` (`idTierLevel` ASC) VISIBLE,
+  PRIMARY KEY (`idBenefitsPerTierLevel`),
   CONSTRAINT `fk_benefitsPerTierLevel_tierLevel1`
     FOREIGN KEY (`idTierLevel`)
-    REFERENCES `proyecto1_BD`.`tierLevel` (`idTierLevel`)
+    REFERENCES `XtreamDB`.`tierLevel` (`idTierLevel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_benefitsPerTierLevel_benefits1`
     FOREIGN KEY (`idBenefits`)
-    REFERENCES `proyecto1_BD`.`benefits` (`idBenefits`)
+    REFERENCES `XtreamDB`.`benefits` (`idBenefits`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`donations`
+-- Table `XtreamDB`.`donations`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`donations` (
-  `idDonations` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`donations` (
+  `idDonations` BIGINT NOT NULL AUTO_INCREMENT,
   `amount` DECIMAL(10,2) NOT NULL,
   `message` VARCHAR(77) NULL,
   `checksum` VARBINARY(300) NOT NULL,
-  PRIMARY KEY (`idDonations`))
+  `idPaymentTransactions` BIGINT NOT NULL,
+  PRIMARY KEY (`idDonations`),
+  INDEX `fk_donations_paymentTransactions1_idx` (`idPaymentTransactions` ASC) VISIBLE,
+  CONSTRAINT `fk_donations_paymentTransactions1`
+    FOREIGN KEY (`idPaymentTransactions`)
+    REFERENCES `XtreamDB`.`paymentTransactions` (`idPaymentTransactions`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`donationsPerUser`
+-- Table `XtreamDB`.`donationsPerUser`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`donationsPerUser` (
-  `idUser` BIGINT NOT NULL,
-  `idDonations` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`donationsPerUser` (
+  `idUser` BIGINT NOT NULL AUTO_INCREMENT,
+  `idDonations` BIGINT NOT NULL,
   `idChannel` BIGINT NOT NULL,
   `postTime` DATETIME NOT NULL,
   `checksum` VARBINARY(300) NOT NULL,
@@ -573,48 +616,48 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`donationsPerUser` (
   INDEX `fk_donationsPerUser_Channel1_idx` (`idChannel` ASC) VISIBLE,
   CONSTRAINT `fk_donationsPerUser_users1`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_donationsPerUser_donations1`
     FOREIGN KEY (`idDonations`)
-    REFERENCES `proyecto1_BD`.`donations` (`idDonations`)
+    REFERENCES `XtreamDB`.`donations` (`idDonations`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_donationsPerUser_Channel1`
     FOREIGN KEY (`idChannel`)
-    REFERENCES `proyecto1_BD`.`Channel` (`idChannel`)
+    REFERENCES `XtreamDB`.`Channel` (`idChannel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`blackList`
+-- Table `XtreamDB`.`blackList`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`BlackList` (
-  `idStreamer` BIGINT NOT NULL,
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`BlackList` (
+  `idStreamer` BIGINT NOT NULL AUTO_INCREMENT,
   `idUser` BIGINT NOT NULL,
   `postTime` DATETIME NOT NULL,
   INDEX `fk_blackList_users1_idx` (`idStreamer` ASC) VISIBLE,
   INDEX `fk_blackList_users2_idx` (`idUser` ASC) VISIBLE,
   CONSTRAINT `fk_blackList_users1`
     FOREIGN KEY (`idStreamer`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_blackList_users2`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`ticket`
+-- Table `XtreamDB`.`ticket`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`ticket` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`ticket` (
   `idTicket` INT NOT NULL AUTO_INCREMENT,
   `issue` VARCHAR(75) NOT NULL,
   `resolved` BIT NOT NULL,
@@ -622,26 +665,27 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`ticket` (
   `contactMethod` VARCHAR(55) NOT NULL,
   `idSupportAssociate` INT NOT NULL,
   `idUser` BIGINT NOT NULL,
+  `idUserSupport` BIGINT NOT NULL,
   PRIMARY KEY (`idTicket`),
-  INDEX `fk_ticket_supportAssociate1_idx` (`idSupportAssociate` ASC) VISIBLE,
   INDEX `fk_ticket_users1_idx` (`idUser` ASC) VISIBLE,
-  CONSTRAINT `fk_ticket_supportAssociate1`
-    FOREIGN KEY (`idSupportAssociate`)
-    REFERENCES `proyecto1_BD`.`supportAssociate` (`idSupportAssociate`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_ticket_users2_idx` (`idUserSupport` ASC) VISIBLE,
   CONSTRAINT `fk_ticket_users1`
     FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ticket_users2`
+    FOREIGN KEY (`idUserSupport`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`Pictures`
+-- Table `XtreamDB`.`Pictures`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`Pictures` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`Pictures` (
   `idPictures` BIGINT NOT NULL AUTO_INCREMENT,
   `URL` VARCHAR(76) NOT NULL,
   `PostTime` DATETIME NOT NULL,
@@ -650,9 +694,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`PicturesPerStream`
+-- Table `XtreamDB`.`PicturesPerStream`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`PicturesPerStream` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`PicturesPerStream` (
   `idPicturesPerStream` BIGINT NOT NULL AUTO_INCREMENT,
   `idPictures` BIGINT NOT NULL,
   `idStreams` BIGINT NOT NULL,
@@ -661,67 +705,75 @@ CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`PicturesPerStream` (
   INDEX `fk_PicturesPerStream_streams1_idx` (`idStreams` ASC) VISIBLE,
   CONSTRAINT `fk_PicturesPerStream_Pictures1`
     FOREIGN KEY (`idPictures`)
-    REFERENCES `proyecto1_BD`.`Pictures` (`idPictures`)
+    REFERENCES `XtreamDB`.`Pictures` (`idPictures`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_PicturesPerStream_streams1`
     FOREIGN KEY (`idStreams`)
-    REFERENCES `proyecto1_BD`.`streams` (`idStreams`)
+    REFERENCES `XtreamDB`.`streams` (`idStreams`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `proyecto1_BD`.`balances`
+-- Table `XtreamDB`.`benefitsPerPartnerProgram`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`balances` (
-  `idbalance` BIGINT NOT NULL,
-  `amount` DECIMAL(10,2) NOT NULL,
-  `lastUpdate` DATETIME NOT NULL,
-  `checksum` VARBINARY(300) NOT NULL,
-  `idUser` BIGINT NOT NULL,
-  `idStreamer` BIGINT NOT NULL,
-  `idMerchants` INT NOT NULL,
-  `xtreamPercentage` DECIMAL(5,2) NULL,
-  PRIMARY KEY (`idbalance`),
-  INDEX `fk_balances_users1_idx` (`idUser` ASC) VISIBLE,
-  INDEX `fk_balances_merchants1_idx` (`idMerchants` ASC) VISIBLE,
-  INDEX `fk_balances_users2_idx` (`idStreamer` ASC) VISIBLE,
-  CONSTRAINT `fk_balances_users1`
-    FOREIGN KEY (`idUser`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_balances_merchants1`
-    FOREIGN KEY (`idMerchants`)
-    REFERENCES `proyecto1_BD`.`merchants` (`idMerchants`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_balances_users2`
-    FOREIGN KEY (`idStreamer`)
-    REFERENCES `proyecto1_BD`.`users` (`idUser`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `proyecto1_BD`.`benefitsPerPartnerProgram`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `proyecto1_BD`.`benefitsPerPartnerProgram` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`benefitsPerPartnerProgram` (
   `idPartnerProgram` INT NOT NULL,
   `idBenefits` INT NOT NULL,
   INDEX `fk_benefitsPerPartnerProgram_partnerProgram1_idx` (`idPartnerProgram` ASC) VISIBLE,
   INDEX `fk_benefitsPerPartnerProgram_benefits1_idx` (`idBenefits` ASC) VISIBLE,
   CONSTRAINT `fk_benefitsPerPartnerProgram_partnerProgram1`
     FOREIGN KEY (`idPartnerProgram`)
-    REFERENCES `proyecto1_BD`.`partnerProgram` (`idPartnerProgram`)
+    REFERENCES `XtreamDB`.`partnerProgram` (`idPartnerProgram`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_benefitsPerPartnerProgram_benefits1`
     FOREIGN KEY (`idBenefits`)
-    REFERENCES `proyecto1_BD`.`benefits` (`idBenefits`)
+    REFERENCES `XtreamDB`.`benefits` (`idBenefits`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`StreamEventType`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`StreamEventType` (
+  `idStreamEventType` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(150) NOT NULL,
+  PRIMARY KEY (`idStreamEventType`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`StreamLog`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`StreamLog` (
+  `idStreamLog` BIGINT NOT NULL AUTO_INCREMENT,
+  `PostTime` DATETIME NOT NULL,
+  `EndTime` DATETIME NULL,
+  `idStreams` BIGINT NOT NULL,
+  `idUser` BIGINT NOT NULL,
+  `idStreamEventType` INT NOT NULL,
+  PRIMARY KEY (`idStreamLog`),
+  INDEX `fk_StreamLog_streams1_idx` (`idStreams` ASC) VISIBLE,
+  INDEX `fk_StreamLog_users1_idx` (`idUser` ASC) VISIBLE,
+  INDEX `fk_StreamLog_StreamEventType1_idx` (`idStreamEventType` ASC) VISIBLE,
+  CONSTRAINT `fk_StreamLog_streams1`
+    FOREIGN KEY (`idStreams`)
+    REFERENCES `XtreamDB`.`streams` (`idStreams`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_StreamLog_users1`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `XtreamDB`.`users` (`idUser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_StreamLog_StreamEventType1`
+    FOREIGN KEY (`idStreamEventType`)
+    REFERENCES `XtreamDB`.`StreamEventType` (`idStreamEventType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
