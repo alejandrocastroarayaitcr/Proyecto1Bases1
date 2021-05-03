@@ -47,7 +47,7 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`paymentStatus`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentStatus` (
-  `idPaymentStatus` INT NOT NULL,
+  `idPaymentStatus` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idPaymentStatus`))
 ENGINE = InnoDB;
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   `description` NVARCHAR(8000) NOT NULL,
   `paymentTimeStamp` DATETIME NOT NULL,
   `computerName` VARCHAR(55) NOT NULL,
-  `ipAddress` BIGINT NOT NULL,
+  `ipAddress` VARCHAR(45) NOT NULL,
   `checksum` VARBINARY(300) NOT NULL,
   `idUser` BIGINT NOT NULL,
   `idmerchants` INT NOT NULL,
@@ -132,7 +132,7 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`transactionSubType`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`transactionSubType` (
-  `idTransactionSubType` INT NOT NULL,
+  `idTransactionSubType` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idTransactionSubType`))
 ENGINE = InnoDB;
@@ -334,12 +334,13 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`Videos` (
   `url` VARCHAR(300) NOT NULL,
   `size` DECIMAL(10,2) NOT NULL,
   `length` INT NOT NULL,
-  `views` BIGINT NOT NULL,
   `videoQualityId` INT NOT NULL,
   `alloweddatatypeid` INT NOT NULL,
+  `idStreams` BIGINT NOT NULL,
   PRIMARY KEY (`idvideo`),
   INDEX `fk_Videos_VideoQuality1_idx` (`videoQualityId` ASC) VISIBLE,
   INDEX `fk_Videos_AllowedDatatypes1_idx` (`alloweddatatypeid` ASC) VISIBLE,
+  INDEX `fk_Videos_streams1` (`idStreams` ASC) VISIBLE,
   CONSTRAINT `fk_Videos_VideoQuality1`
     FOREIGN KEY (`videoQualityId`)
     REFERENCES `XtreamDB`.`VideoQuality` (`idvideoQuality`)
@@ -348,6 +349,11 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`Videos` (
   CONSTRAINT `fk_Videos_AllowedDatatypes1`
     FOREIGN KEY (`alloweddatatypeid`)
     REFERENCES `XtreamDB`.`AllowedDatatypes` (`idalloweddatatype`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Videos_streams1`
+    FOREIGN KEY (`idStreams`)
+    REFERENCES `XtreamDB`.`streams` (`idStreams`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -359,29 +365,22 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`streams` (
   `idStreams` BIGINT NOT NULL AUTO_INCREMENT,
   `title` NVARCHAR(200) NOT NULL,
-  `viewers` BIGINT NOT NULL,
+  `viewers` BIGINT NULL,
   `date` DATETIME NOT NULL,
   `live` BIT NOT NULL,
   `endedDate` DATETIME NULL,
   `averageViewers` INT NULL,
   `maxiumViewers` INT NULL,
   `deleted` BIT NOT NULL,
-  `storageLimitDate` DATETIME NOT NULL,
+  `storageLimitDate` DATETIME NULL,
   `idCategories` INT NOT NULL,
-  `videoid` BIGINT NOT NULL,
   `idChannel` BIGINT NOT NULL,
   PRIMARY KEY (`idStreams`),
   INDEX `fk_streams_categories1_idx` (`idCategories` ASC) VISIBLE,
-  INDEX `fk_streams_Videos1_idx` (`videoid` ASC) VISIBLE,
   INDEX `fk_streams_Channel1_idx` (`idChannel` ASC) VISIBLE,
   CONSTRAINT `fk_streams_categories1`
     FOREIGN KEY (`idCategories`)
     REFERENCES `XtreamDB`.`categories` (`idCategories`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_streams_Videos1`
-    FOREIGN KEY (`videoid`)
-    REFERENCES `XtreamDB`.`Videos` (`idvideo`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_streams_Channel1`
@@ -636,7 +635,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `XtreamDB`.`blackList`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `XtreamDB`.`blackList` (
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`BlackList` (
   `idStreamer` BIGINT NOT NULL AUTO_INCREMENT,
   `idUser` BIGINT NOT NULL,
   `postTime` DATETIME NOT NULL,
