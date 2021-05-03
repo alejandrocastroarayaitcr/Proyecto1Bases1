@@ -26,15 +26,15 @@ CREATE PROCEDURE registrar_suscripcion(
 )
 BEGIN
 
-DECLARE exit handler for SQLEXCEPTION
- BEGIN
+ DECLARE exit handler for SQLEXCEPTION
+BEGIN
   if @inicie_transaccion = 1 and transaccion_anterior = 0 then
-	ROLLBACK;
-  end if;
-  GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, 
-   @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
-  SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @text);
-  SELECT @full_error as mensaje_error;
+  ROLLBACK;
+ end if;
+GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, 
+  @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+ SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @text);
+ SELECT @full_error as mensaje_error;
  END;
 
 SET autocommit = 0;
@@ -57,7 +57,7 @@ if @inicie_transaccion = 0 and transaccion_anterior = 0 then
     SET @inicie_transaccion = 1;
 end if;
 
-CALL registrar_pago(pUsernameReceiver,pUsernameSender,pMerchantName,pAmount,pCurrencySymbol,pDescription,pXtreamPercentage,pComputerName,pIPAddress,pTransactionType,@inicie_transaccion,1);
+CALL registrar_pago(pUsernameSender,pMerchantName,pAmount,pCurrencySymbol,pDescription,pXtreamPercentage,pComputerName,pIPAddress,pTransactionType,@inicie_transaccion);
 
 INSERT INTO recurrenceType(name,valueToAdd,datePart)
 VALUES(@canal,pAmount,DATE_FORMAT(now(),'%d-%m-%Y'));
@@ -79,4 +79,4 @@ end if;
 END $$
 DELIMITER ;
 
-CALL registrar_suscripcion("alejandrocastro123","julioprofetv","PayPal","tier one","subscription","descriptionHTML","this is a transaction",current_time(),"imglink.com/123456.jpg",5.0,'$',20.0,"subscription","AlePC","127.0.0.1",0)
+CALL registrar_suscripcion('alejandrocastro123','julioprofetv','PayPal','tier one','subscription','descriptionHTML','this is a transaction',current_time(),'imglink.com/123456.jpg',5.0,'$',20.0,'subscription','AlePC','127.0.0.1',0)
