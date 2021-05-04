@@ -47,11 +47,22 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`paymentStatus`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentStatus` (
-  `idPaymentStatus` INT NOT NULL,
+  `idPaymentStatus` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idPaymentStatus`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`Currency`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`Currency` (
+  `idCurrency` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(76) NOT NULL,
+  `region` VARCHAR(76) NULL,
+  `symbol` varchar(5) NOT NULL,
+  `code` varchar(15) NOT NULL,
+  PRIMARY KEY (`idCurrency`))
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `XtreamDB`.`paymentAttempts`
@@ -60,22 +71,23 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   `idPaymentAttempts` INT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `amount` DECIMAL(10,2) NOT NULL,
-  `currencySymbol` VARCHAR(45) NOT NULL,
-  `referenceNumber` BIGINT NOT NULL,
+  `referenceNumber` BIGINT NULL,
   `errorNumber` BIGINT NULL,
   `merchantTransactionNumber` BIGINT NOT NULL,
   `description` NVARCHAR(8000) NOT NULL,
   `paymentTimeStamp` DATETIME NOT NULL,
   `computerName` VARCHAR(55) NOT NULL,
-  `ipAddress` BIGINT NOT NULL,
+  `ipAddress` VARCHAR(45) NOT NULL,
   `checksum` VARBINARY(300) NOT NULL,
   `idUser` BIGINT NOT NULL,
   `idmerchants` INT NOT NULL,
   `idpaymentStatus` INT NOT NULL,
+  `idCurrency` int NOT NULL,
   PRIMARY KEY (`idPaymentAttempts`),
   INDEX `fk_paymentAttempts_users_idx` (`idUser` ASC) VISIBLE,
   INDEX `fk_paymentAttempts_merchants1_idx` (`idmerchants` ASC) VISIBLE,
   INDEX `fk_paymentAttempts_paymentStatus1_idx` (`idpaymentStatus` ASC) VISIBLE,
+  INDEX `fk_paymentAttempts_Currency1_idx` (`idCurrency` ASC) VISIBLE,
   CONSTRAINT `fk_paymentAttempts_users`
     FOREIGN KEY (`idUser`)
     REFERENCES `XtreamDB`.`users` (`idUser`)
@@ -90,7 +102,12 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
     FOREIGN KEY (`idpaymentStatus`)
     REFERENCES `XtreamDB`.`paymentStatus` (`idPaymentStatus`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_paymentAttempts_Currency1_idx`
+    FOREIGN KEY (`idCurrency`)
+    REFERENCES `XtreamDB`.`Currency` (`idCurrency`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)	
 ENGINE = InnoDB;
 
 
@@ -132,7 +149,7 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`transactionSubType`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`transactionSubType` (
-  `idTransactionSubType` INT NOT NULL,
+  `idTransactionSubType` INT NOT NULL auto_increment,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idTransactionSubType`))
 ENGINE = InnoDB;
@@ -145,12 +162,11 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentTransactions` (
   `idPaymentTransactions` BIGINT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `description` VARCHAR(45) NOT NULL,
-  `username` VARCHAR(45) NOT NULL,
   `computerName` VARCHAR(45) NOT NULL,
   `ipAddress` VARCHAR(45) NOT NULL,
   `checksum` VARCHAR(45) NULL,
   `amount` DECIMAL(10,2) NULL,
-  `referenceID` BIGINT NOT NULL,
+  `referenceID` BIGINT NULL,
   `idUser` BIGINT NOT NULL,
   `idTransactionType` INT NOT NULL,
   `idTransactionSubType` INT NOT NULL,
@@ -485,7 +501,7 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`rolesPerAssociate` (
   `postTime` DATETIME NOT NULL,
   `deleted` BIT NOT NULL,
   `user` VARCHAR(45) NOT NULL,
-  `ipAddress` BIGINT NOT NULL,
+  `ipAddress` VARCHAR(45) NOT NULL,
   `checksum` VARCHAR(45) NOT NULL,
   `lastUpdate` DATETIME NULL,
   `idRoles` INT NOT NULL,
@@ -544,7 +560,7 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`ratings` (
   `idUser` BIGINT NOT NULL,
   `idStreamer` BIGINT NOT NULL,
   `checksum` VARCHAR(45) NOT NULL,
-  `ipAddress` BIGINT NOT NULL,
+  `ipAddress` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idRatings`),
   INDEX `fk_ratings_users1_idx` (`idUser` ASC) VISIBLE,
   INDEX `fk_ratings_users2_idx` (`idStreamer` ASC) VISIBLE,
@@ -720,7 +736,7 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`benefitsPerPartnerProgram`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`benefitsPerPartnerProgram` (
-  `idPartnerProgram` INT NOT NULL,
+  `idPartnerProgram` INT NOT NULL AUTO_INCREMENT,
   `idBenefits` INT NOT NULL,
   INDEX `fk_benefitsPerPartnerProgram_partnerProgram1_idx` (`idPartnerProgram` ASC) VISIBLE,
   INDEX `fk_benefitsPerPartnerProgram_benefits1_idx` (`idBenefits` ASC) VISIBLE,
@@ -778,7 +794,414 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`StreamLog` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- Script de llenado
+insert into users (idUser, firstname, lastname, username, email, verified, password, checksum)
+values(1,"Lolo", "Fernández", "LolitoFNDZ", "lolencioElCrack@gmail.com",1, 100010101001001110,"0x62736A696F"),
+(2,"Taylor", "Hernández", "TAY-LORD_OF_THE_HELL", "taylor20sep.hc@gmail.com",0, 1101011001000,"0x669EB8A696F"),
+(3,"Juan", "Vargas", "Fletes_Baratos", "juanVF@Yopmail.com",0, 100001011010111,"0x235FA4D89D3"),
+(4,"Yuen", "Law", "Yuen777", "yuenlawTEC@Yopmail.com",1, 101110011010101,"0x3521BA7C459D"),
+(5,"Alejandro", "Castro", "Don_Simon", "alejandro_gamer666@hotmail.com",0, 11101100000,"0x214CC7D958A"),
+(6,"Ruben", "Viquez", "RubiusUwU", "rubiuNoSeasMalo@gmail.com",1, 1111110000001,"0x2A45D1D9581"),
+(7,"Carlos", "Alvarado", "Charly_God", "ElPresi666@hotmail.com",0, 10000110001,"0x75ACB66BD20"),
+(8,"Florentino", "Perez", "FlorentiNop", "florentinoPerez123@gmail.com",1, 101010111000,"0x123BDB66B01A"),
+(9,"Francisco", "Franco", "xX_Franchesco_Xx", "arribaFranco@gmail.com",1, 1001011000101,"0x41C2ABF45E"),
+(10,"Luis", "Miguel", "eLSolazo", "luismiguelelcrack@hotmail.com",0, 1110010110100,"0x541AB2CCF12");
+
+insert into Channel ( `idChannel`,`displayName` ,`description` ,`pictureURL` ,`idUser`)
+values(1,"Lolito", "Jejeje yepas jeje", "https://images.app.goo.gl/cpDD8XVikgPnEnJd9", 1),
+(2,"Tay-Lord", "momento xd", "https://images.app.goo.gl/HNA2H1Vz1GDaoCrv9", 2),
+(3,"Juancin", "Mi madre me dio la vida, pero Tusa las ganas de vivirla", "https://images.app.goo.gl/agBxQAekVfxux95A7", 3),
+(4,"Yuen", "Lo unico más duro en esta vida que un algoritmo NP-Duro, es no tenerte baby", "https://images.app.goo.gl/ufMstNaYFzmno8GM6", 4),
+(5,"Ale-Luya", "Simón", "https://images.app.goo.gl/iqNTDrC7zEkiZgn77", 5),
+(6,"Rubiu", "ust ust", "https://images.app.goo.gl/EibfqZS5EPee3zJ3A", 6),
+(7,"Charly Alvarado", "Un chuzo de mae", "https://images.app.goo.gl/VWkNwDSPrUwpDUrf7", 7),
+(8,"Florentino", "Ni tan superman va a ser tan Super como mi liga. HALA MADRID!. SIUUUU", "https://images.app.goo.gl/gMuiRSMGrp7f9coe6", 8),
+(9,"Franco", "Arriba España. Si España te ataca, no hay error, no hay error", "https://images.app.goo.gl/Di6caAhjUKbw8BKx7", 9),
+(10,"LuisMi", "Si tú me hubieras dicho siempre la verdad, Si hubieras respondido cuando te llamé, Si hubieras amado cuando te amé, Serías en mis sueños la mejor mujer… ", "https://images.app.goo.gl/PudHayh5p9ZofEAfA", 10);
+
+insert into categories (`name`)
+values ("Legue Of Legends"), ("The Binding Of Isaac"), ("Warzone"), ("Genshi Impact"), ("Just Talking"), ("ASMR"), ("Free Fire"), ("Clash Royale"), ("Mongos"), 
+("Betrayel.io"), ("Valorant"),("Fortnie"),("Agar.io"),("Pinturillo"), ("Omegle"), ("Blog en Vivo"), ("Programación");
+
+insert into tags (`name`)
+values ("RPG"), ("Shooter"), ("Random"), ("Blog"), ("Funny"), ("Girl"), ("Mobile"), ("Acción"), ("MOBA"), 
+("IRL"), ("Carreras"),("Plataformas"),("Terror"),("Simulación"), ("Puzle");
+
+insert into VideoQuality(`quality`)
+values  ("144"), ("240"), ("360"), ("480"),("720"),("1080");
+
+insert into AllowedDatatypes(`datatype`)
+values  ("MP3"), ("MP4"), ("MPEG-4"), ("MOV");
+
+insert into StreamEventType(`name`)
+values ("Enter"),("Leave"),("Donate");
+
+insert into transactionType(`name`)
+values ("P2P"),("Cancelation"),("Register");
+
+insert into transactionSubType(`name`)
+values ("Donation");
+
+insert into Currency(name, symbol, code, region)
+values ("Euro", "€", "EUR", "Eurozone"), ("Dolar", "$", "USD", "USA"), ("Yen", "¥", "JPY", "Japan"), ("Colón", "₡", "CRC", "Costa Rica");
+
+insert into paymentStatus(name)
+values("Accepted"),("In process"),("Declined");
+
+insert into merchants(name,merchantURL,iconURL,enabled)
+values ("Mcdonalds", "https://www.mcdonalds.co.cr/", "https://images.app.goo.gl/sAYT9hFoUUZT95Yb8", 1),
+("Logitech", "https://www.logitechg.com/es-roam", "https://images.app.goo.gl/GYBj1xURa1KFocfC9", 1),
+("Playstation", "https://www.playstation.com/es-cr/", "https://images.app.goo.gl/xnNZBeUWHr9QV4AU9", 1),
+("Pollolandia", "https://pollolandia.com/cr/index.php/component/users/?view=remind", "https://images.app.goo.gl/KrWHY9WT4ZimErhx9", 0),
+("Wallmart", "https://walmart.co.cr/", "https://images.app.goo.gl/ruF2CG4vxZHjtY1E6", 0);
+
+DROP PROCEDURE IF EXISTS filldata;
+
+delimiter //
+
+CREATE PROCEDURE filldata(IN opcion int, In cant int)
+BEGIN
+  declare opt int;
+  DECLARE cantidad INT;
+  DECLARE post_time DATETIME;
+  DECLARE rate INT;
+  DECLARE streamer_id bigint;
+  DECLARE user_id bigint;
+  DECLARE checksum_1 VARCHAR(45);
+  DECLARE ipAddress VARCHAR(45);
+  DECLARE channel_id bigint;
+  set opt= opcion;
+  set cantidad=cant;
+	case opt
+		-- Ratings
+		when 1 then
+        
+			WHILE cantidad > 0 DO
+            
+				SET rate = RAND()*(5-1)+1;
+				set ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
+				set checksum_1 = concat("checksum", floor(9999999*RAND()));
+				
+				select date_format(
+				from_unixtime(
+				 rand() * 
+					(unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO post_time ; 
+				
+				set streamer_id=0;
+				set user_id=0;
+				while streamer_id=user_id do
+					SELECT idUser INTO streamer_id FROM users ORDER BY RAND() LIMIT 1;
+					SELECT idUser INTO user_id FROM users ORDER BY RAND() LIMIT 1;
+				end while;
+				
+				INSERT INTO ratings (rating, postTime, idUser, idStreamer, checksum, ipAddress) 
+				VALUES
+				(rate, post_time, user_id, streamer_id, checksum_1, ipAddress);
+
+				SET cantidad = cantidad - 1;
+            
+		  END WHILE;
+	  
+      -- Fill blacklist
+	  when 2 then
+		WHILE cantidad > 0 DO
+
+            			
+			select date_format(
+			from_unixtime(
+				 rand() * 
+					(unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO post_time ; 
+			set streamer_id=0;
+            set user_id=0;
+            while streamer_id=user_id do
+				SELECT idUser INTO streamer_id FROM users ORDER BY RAND() LIMIT 1;
+				SELECT idUser INTO user_id FROM users ORDER BY RAND() LIMIT 1;
+			end while;
+			
+			INSERT INTO BlackList  
+			VALUES (user_id, streamer_id, post_time);
+
+			SET cantidad = cantidad - 1;
+            
+		END WHILE;
+        
+	-- Fill Streams
+	when 3 then
+		WHILE cantidad > 0 DO
+        
+			SELECT idChannel INTO channel_id FROM Channel ORDER BY RAND() LIMIT 1;
+
+            select displayname into @name from Channel where channel_id=idChannel;
+            
+            SELECT idCategories INTO @categoria FROM categories ORDER BY RAND() LIMIT 1;
+            
+            select name into @cat from categories where @categoria=idCategories;
+            
+			set @title1 = concat("Stream de ", @cat);
+            set @title2= concat(" By: ", @name);
+            set @title= concat(@title1, @title2);
+            
+			select date_format(
+			from_unixtime(
+				 rand() * 
+					(unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO post_time ;
+		
+			set @live= floor(rand()*2);
+            
+            if @live=1 then
+				set @end_time= null;
+                set @avrg_viewers=NULL ;
+				set @max_viewers=NULL;
+                set @viewers=rand()*10000;
+			else
+				select date_format(
+				from_unixtime(rand()* ((rand() *500000+unix_timestamp(post_time))-unix_timestamp(post_time))+unix_timestamp(post_time)), '%Y-%m-%d %H:%i:%s') INTO @end_time ;
+                set @avrg_viewers=rand()*10000;
+				set @max_viewers=@avrg_viewers+rand()*2000;
+                set @viewers=NULL;
+                
+            end if;
+            
+            
+            select idPartnerProgram into @partner from Channel where channel_id=idChannel;
+            
+            IF  @partner is NULL then
+				set @LimitDate=from_unixtime(unix_timestamp(@end_time)+1200000);
+			else 
+				set @LimitDate=from_unixtime(unix_timestamp(@end_time)+4800000);
+            end if;
+            
+            
+            if unix_timestamp(now())>unix_timestamp(@LimitDate) then
+				set @deleted=1;
+			else
+				set @deleted=0;
+            end if;
+            
+            insert into streams (`title`, `viewers`, `date`,`live`, `endedDate`, `averageViewers`, `maxiumViewers`, `deleted`, `storageLimitDate`, `idCategories`, `idChannel`)
+            values(@title, @viewers, post_time, @live, @end_time, @avrg_viewers, @max_viewers,@deleted, @LimitDate, @categoria, channel_id);
+            
+            SET @last_id_in_streams = LAST_INSERT_ID();
+            
+             set @ntags= floor(rand()*3);
+             while @ntags>0 do
+                 SELECT idTags INTO @tag FROM tags ORDER BY RAND() LIMIT 1;
+                 insert into TagsPerStream (`idTags`,`idStreams`)
+                 values (@tag, @last_id_in_streams);
+                 set @ntags= @ntags-1;
+             end while;
+            
+             if @live=0 then
+				 set @url= concat("htts:\WWW.URL",rand()*999999999);
+				 set @size= rand()*10000;
+				 set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
+				 SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
+				 SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
+				 insert into Videos (`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
+				 values(@url, @size, @length, @quality, @type, @last_id_in_streams);
+             end if;
+            
+            SET cantidad = cantidad - 1;
+            
+	 END WHILE;
+     
+     -- Fill Stream History
+	when 4 then
+		WHILE cantidad > 0 DO
+        
+			SELECT idStreams INTO @stream_id FROM streams ORDER BY RAND() LIMIT 1;
+            SELECT idChannel INTO @streamer_id FROM streams where idStreams=@stream_id;
+            SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+            SELECT idStreamEventType INTO @EventType FROM StreamEventType ORDER BY RAND() LIMIT 1;
+            
+            while @streamer_id=@user_id do
+				SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+			end while;
+            
+            SELECT date INTO @time1 FROM streams where idStreams=@stream_id;
+            SELECT endedDate INTO @time2 FROM streams where idStreams=@stream_id;
+            
+            if @time2 is null then
+            
+				select date_format(
+				from_unixtime(-200+
+					 rand() * 
+						(unix_timestamp(now()) - unix_timestamp(@time1))+unix_timestamp(@time1)), '%Y-%m-%d %H:%i:%s') INTO @start_Date;
+						
+				set @exit_Date = @start_Date;
+                
+				while @exit_Date<=@start_Date do
+					select date_format(
+					from_unixtime(
+					 rand() * 
+						(unix_timestamp(now()) - unix_timestamp(@time1))+unix_timestamp(@time1)), '%Y-%m-%d %H:%i:%s') INTO @exit_Date;
+				end while;
+                
+            else 
+				select date_format(
+				from_unixtime(-200+
+					 rand() * 
+						(unix_timestamp(@time2) - unix_timestamp(@time1))+unix_timestamp(@time1)), '%Y-%m-%d %H:%i:%s') INTO @start_Date;
+						
+				set @exit_Date = @start_Date;
+				
+				while @exit_Date<=@start_Date do
+					select date_format(
+					from_unixtime(
+					 rand() * 
+						(unix_timestamp(@time2) - unix_timestamp(@time1))+unix_timestamp(@time1)), '%Y-%m-%d %H:%i:%s') INTO @exit_Date;
+				end while;
+			end if;
+			
+            insert into StreamLog (`PostTime`, `EndTime`, `idStreams`,`idUser`, `idStreamEventType`)
+            values(@start_Date, @exit_Date, @stream_id, @user_id, @EventType);
+			SET cantidad = cantidad - 1;
+            
+		END WHILE;
+	-- Fill Donations
+	when 5 then
+		while cantidad >0 do
+        
+			call paymentAttemp(1);
+            SET @last_id_in_paymentAttempts = LAST_INSERT_ID();
+            
+            if @status=1 then
+				call paymentTran(1);
+				SET @last_id_in_paymentTransactions = LAST_INSERT_ID();
+                
+				select idpaymentStatus into @status from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				select idUser into @user from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				select amount into @amount from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				select checksum into @checksum from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+                set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
+				select computerName into @compName from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				select description into @description from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				
+                set @message= "Hola bro, salu2";
+				insert into donations (amount,message,checksum, idPaymentTransactions)
+				values (@amount,@message,@checksum, @last_id_in_paymentTransactions);
+				
+				SET @last_id_in_donations = LAST_INSERT_ID();
+                
+                UPDATE paymentAttempts
+				SET referenceNumber=@last_id_in_donations, ipAddress=@ipAddress
+				WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				
+				UPDATE paymentTransactions
+				SET referenceID=@last_id_in_donations, amount=@amount,checksum=@checksum, ipAddress=@ipAddress,computerName=@compName,description=@description, idUser=@user
+				WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
+				
+				SET cantidad = cantidad - 1;
+            end if;
+		END WHILE;
+	END CASE;
+END //
+
+delimiter ;
+
+DROP PROCEDURE IF EXISTS paymentTran;
+
+delimiter &&
+
+CREATE PROCEDURE paymentTran(IN opt int)
+BEGIN
+
+    select date_format(
+		from_unixtime(
+			rand() * (unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO @post_time ;
+             
+	SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+
+	select username into @user from users where idUser=@user_id;
+	set @title2= concat(" By: ", @user);
+    
+    set @compName2= concat("Desktop-",@user);
+    set @compName = concat(@compName2, floor(999999*RAND()));
+    
+    set @amount_int= rand()*99999999;
+    SELECT CAST( @amount_int AS DECIMAL(10,2)) AS decimal_value into @amount;
+    
+    set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
+	set @checksum_1 = concat("checksum", 9999999*RAND() );
+    
+   case opt
+  -- Donation
+	when 1 then
+		set @title1 = concat("Donation");
+        set @description= concat(@title1, @title2);
+        set @ttype=1;
+		set @tsubtype=1;
+  end case;
+  
+  insert into paymentTransactions(`postTime`,`description`,`computerName`, `ipAddress`,`checksum`,`amount`,`idUser`,`idTransactionType`,`idTransactionSubType`)
+  values (@post_time, @description, @compName, @ipAddress, @checksum_1,@amount,@user_id,@ttype, @tsubtype);
+	
+END &&
+
+delimiter ;
+
+
+DROP PROCEDURE IF EXISTS paymentAttemp;
+
+delimiter &&
+
+CREATE PROCEDURE paymentAttemp(IN opt int)
+BEGIN
+
+    select date_format(
+		from_unixtime(
+			rand() * (unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO @post_time ;
+            
+	select date_format(
+		from_unixtime(
+			rand() * (unix_timestamp(now()) - @post_time)+@post_time), '%Y-%m-%d %H:%i:%s') INTO @stampTime ;
+             
+	SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+    SELECT idMerchants INTO @merch FROM merchants ORDER BY RAND() LIMIT 1;
+    SELECT idCurrency INTO @currency FROM Currency ORDER BY RAND() LIMIT 1;
+    SELECT idPaymentStatus INTO @status FROM paymentStatus ORDER BY RAND() LIMIT 1;
+    
+    select username into @user from users where idUser=@user_id;
+    
+    set @compName2= concat("Desktop-",@user);
+    set @compName = concat(@compName2, floor(999999*RAND()));
+
+	select username into @user from users where idUser=@user_id;
+	set @title2= concat(" By: ", @user);
+    
+    set @amount_int= rand()*99999999;
+    SELECT CAST( @amount_int AS DECIMAL(10,2)) AS decimal_value into @amount;
+    
+    set @merchNumber = floor(999999*RAND());
+	set @checksum_1 = concat("checksum", 9999999*RAND() );
+    
+    set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
+    
+   case opt
+  -- Donation
+	when 1 then
+		set @title1 = concat("Donation");
+        set @description= concat(@title1, @title2);
+  end case;
+  
+  if @status=3 then
+	set @error= floor(rand()*500);
+  else
+	set @error= Null;
+  end if;
+  
+  insert into paymentAttempts(`postTime`,`amount`,`merchantTransactionNumber`, `description`,`paymentTimeStamp`,`computerName`, `ipAddress`,`checksum`,`idUser`,`idmerchants`,`idCurrency`, `idpaymentStatus`, `errorNumber`)
+  values (@post_time, @amount, @merchNumber, @description, @stampTime, @compName, @ipAddress, @checksum_1, @user_id, @merch,@currency,@status, @error);
+	
+END &&
+
+delimiter ;
+call filldata(1,10);
+call filldata(2,3);
+call filldata(3,30);
+call filldata(4,15);
+call filldata(5,10);
