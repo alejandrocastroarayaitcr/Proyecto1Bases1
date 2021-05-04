@@ -52,6 +52,17 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentStatus` (
   PRIMARY KEY (`idPaymentStatus`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `XtreamDB`.`Currency`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `XtreamDB`.`Currency` (
+  `idCurrency` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(76) NOT NULL,
+  `region` VARCHAR(76) NULL,
+  `symbol` varchar(5) NOT NULL,
+  `code` varchar(15) NOT NULL,
+  PRIMARY KEY (`idCurrency`))
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `XtreamDB`.`paymentAttempts`
@@ -60,8 +71,7 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   `idPaymentAttempts` INT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `amount` DECIMAL(10,2) NOT NULL,
-  `currencySymbol` VARCHAR(45) NOT NULL,
-  `referenceNumber` BIGINT NOT NULL,
+  `referenceNumber` BIGINT NULL,
   `errorNumber` BIGINT NULL,
   `merchantTransactionNumber` BIGINT NOT NULL,
   `description` NVARCHAR(8000) NOT NULL,
@@ -72,10 +82,12 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   `idUser` BIGINT NOT NULL,
   `idmerchants` INT NOT NULL,
   `idpaymentStatus` INT NOT NULL,
+  `idCurrency` int NOT NULL,
   PRIMARY KEY (`idPaymentAttempts`),
   INDEX `fk_paymentAttempts_users_idx` (`idUser` ASC) VISIBLE,
   INDEX `fk_paymentAttempts_merchants1_idx` (`idmerchants` ASC) VISIBLE,
   INDEX `fk_paymentAttempts_paymentStatus1_idx` (`idpaymentStatus` ASC) VISIBLE,
+  INDEX `fk_paymentAttempts_Currency1_idx` (`idCurrency` ASC) VISIBLE,
   CONSTRAINT `fk_paymentAttempts_users`
     FOREIGN KEY (`idUser`)
     REFERENCES `XtreamDB`.`users` (`idUser`)
@@ -90,7 +102,12 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
     FOREIGN KEY (`idpaymentStatus`)
     REFERENCES `XtreamDB`.`paymentStatus` (`idPaymentStatus`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_paymentAttempts_Currency1_idx`
+    FOREIGN KEY (`idCurrency`)
+    REFERENCES `XtreamDB`.`Currency` (`idCurrency`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)	
 ENGINE = InnoDB;
 
 
@@ -132,7 +149,7 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`transactionSubType`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`transactionSubType` (
-  `idTransactionSubType` INT NOT NULL AUTO_INCREMENT,
+  `idTransactionSubType` INT NOT NULL auto_increment,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idTransactionSubType`))
 ENGINE = InnoDB;
@@ -145,12 +162,11 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentTransactions` (
   `idPaymentTransactions` BIGINT NOT NULL AUTO_INCREMENT,
   `postTime` DATETIME NOT NULL,
   `description` VARCHAR(45) NOT NULL,
-  `username` VARCHAR(45) NOT NULL,
   `computerName` VARCHAR(45) NOT NULL,
   `ipAddress` VARCHAR(45) NOT NULL,
   `checksum` VARCHAR(45) NULL,
   `amount` DECIMAL(10,2) NULL,
-  `referenceID` BIGINT NOT NULL,
+  `referenceID` BIGINT NULL,
   `idUser` BIGINT NOT NULL,
   `idTransactionType` INT NOT NULL,
   `idTransactionSubType` INT NOT NULL,
@@ -234,6 +250,7 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`Channel` (
   `description` NVARCHAR(500) NULL,
   `pictureURL` VARCHAR(76) NULL,
   `currentSubscriberAmount` INT NULL,
+  `live` BIT NOT NULL,
   `idUser` BIGINT NOT NULL,
   `idPartnerProgram` INT NULL,
   PRIMARY KEY (`idChannel`),
@@ -720,7 +737,7 @@ ENGINE = InnoDB;
 -- Table `XtreamDB`.`benefitsPerPartnerProgram`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`benefitsPerPartnerProgram` (
-  `idPartnerProgram` INT NOT NULL,
+  `idPartnerProgram` INT NOT NULL AUTO_INCREMENT,
   `idBenefits` INT NOT NULL,
   INDEX `fk_benefitsPerPartnerProgram_partnerProgram1_idx` (`idPartnerProgram` ASC) VISIBLE,
   INDEX `fk_benefitsPerPartnerProgram_benefits1_idx` (`idBenefits` ASC) VISIBLE,
@@ -778,7 +795,67 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`StreamLog` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- Script de llenado
+insert into users (idUser, firstname, lastname, username, email, verified, password, checksum)
+values(1,"Lolo", "Fernández", "LolitoFNDZ", "lolencioElCrack@gmail.com",1, 100010101001001110,"0x62736A696F"),
+(2,"Taylor", "Hernández", "TAY-LORD_OF_THE_HELL", "taylor20sep.hc@gmail.com",0, 1101011001000,"0x669EB8A696F"),
+(3,"Juan", "Vargas", "Fletes_Baratos", "juanVF@Yopmail.com",0, 100001011010111,"0x235FA4D89D3"),
+(4,"Yuen", "Law", "Yuen777", "yuenlawTEC@Yopmail.com",1, 101110011010101,"0x3521BA7C459D"),
+(5,"Alejandro", "Castro", "Don_Simon", "alejandro_gamer666@hotmail.com",0, 11101100000,"0x214CC7D958A"),
+(6,"Ruben", "Viquez", "RubiusUwU", "rubiuNoSeasMalo@gmail.com",1, 1111110000001,"0x2A45D1D9581"),
+(7,"Carlos", "Alvarado", "Charly_God", "ElPresi666@hotmail.com",0, 10000110001,"0x75ACB66BD20"),
+(8,"Florentino", "Perez", "FlorentiNop", "florentinoPerez123@gmail.com",1, 101010111000,"0x123BDB66B01A"),
+(9,"Francisco", "Franco", "xX_Franchesco_Xx", "arribaFranco@gmail.com",1, 1001011000101,"0x41C2ABF45E"),
+(10,"Luis", "Miguel", "eLSolazo", "luismiguelelcrack@hotmail.com",0, 1110010110100,"0x541AB2CCF12");
+
+insert into Channel ( `idChannel`,`displayName` ,`description` ,`pictureURL`,`live`,`idUser`)
+values(1,"Lolito", "Jejeje yepas jeje", "https://images.app.goo.gl/cpDD8XVikgPnEnJd9",0, 1),
+(2,"Tay-Lord", "momento xd", "https://images.app.goo.gl/HNA2H1Vz1GDaoCrv9",0, 2),
+(3,"Juancin", "Mi madre me dio la vida, pero Tusa las ganas de vivirla", "https://images.app.goo.gl/agBxQAekVfxux95A7",0, 3),
+(4,"Yuen", "Lo unico más duro en esta vida que un algoritmo NP-Duro, es no tenerte baby", "https://images.app.goo.gl/ufMstNaYFzmno8GM6",0, 4),
+(5,"Ale-Luya", "Simón", "https://images.app.goo.gl/iqNTDrC7zEkiZgn77",0, 5),
+(6,"Rubiu", "ust ust", "https://images.app.goo.gl/EibfqZS5EPee3zJ3A",0, 6),
+(7,"Charly Alvarado", "Un chuzo de mae", "https://images.app.goo.gl/VWkNwDSPrUwpDUrf7",0, 7),
+(8,"Florentino", "Ni tan superman va a ser tan Super como mi liga. HALA MADRID!. SIUUUU", "https://images.app.goo.gl/gMuiRSMGrp7f9coe6", 0,8),
+(9,"Franco", "Arriba España. Si España te ataca, no hay error, no hay error", "https://images.app.goo.gl/Di6caAhjUKbw8BKx7",0, 9),
+(10,"LuisMi", "Si tú me hubieras dicho siempre la verdad, Si hubieras respondido cuando te llamé, Si hubieras amado cuando te amé, Serías en mis sueños la mejor mujer… ", "https://images.app.goo.gl/PudHayh5p9ZofEAfA",0, 10);
+
+insert into categories (`name`)
+values ("Legue Of Legends"), ("The Binding Of Isaac"), ("Warzone"), ("Genshi Impact"), ("Just Talking"), ("ASMR"), ("Free Fire"), ("Clash Royale"), ("Mongos"), 
+("Betrayel.io"), ("Valorant"),("Fortnie"),("Agar.io"),("Pinturillo"), ("Omegle"), ("Blog en Vivo"), ("Programación");
+
+insert into tags (`name`)
+values ("RPG"), ("Shooter"), ("Random"), ("Blog"), ("Funny"), ("Girl"), ("Mobile"), ("Acción"), ("MOBA"), 
+("IRL"), ("Carreras"),("Plataformas"),("Terror"),("Simulación"), ("Puzle");
+
+insert into VideoQuality(`quality`)
+values  ("144"), ("240"), ("360"), ("480"),("720"),("1080");
+
+insert into AllowedDatatypes(`datatype`)
+values  ("MP3"), ("MP4"), ("MPEG-4"), ("MOV");
+
+insert into StreamEventType(`name`)
+values ("Enter"),("Leave"),("Donate");
+
+insert into transactionType(`name`)
+values ("P2P"),("Cancelation"),("Register");
+
+insert into transactionSubType(`name`)
+values ("Donation");
+
+insert into Currency(name, symbol, code, region)
+values ("Euro", "€", "EUR", "Eurozone"), ("Dolar", "$", "USD", "USA"), ("Yen", "¥", "JPY", "Japan"), ("Colón", "₡", "CRC", "Costa Rica");
+
+insert into paymentStatus(name)
+values("Accepted"),("In process"),("Declined");
+
+insert into merchants(name,merchantURL,iconURL,enabled)
+values ("Mcdonalds", "https://www.mcdonalds.co.cr/", "https://images.app.goo.gl/sAYT9hFoUUZT95Yb8", 1),
+("Logitech", "https://www.logitechg.com/es-roam", "https://images.app.goo.gl/GYBj1xURa1KFocfC9", 1),
+("Playstation", "https://www.playstation.com/es-cr/", "https://images.app.goo.gl/xnNZBeUWHr9QV4AU9", 1),
+("Pollolandia", "https://pollolandia.com/cr/index.php/component/users/?view=remind", "https://images.app.goo.gl/KrWHY9WT4ZimErhx9", 0),
+("Wallmart", "https://walmart.co.cr/", "https://images.app.goo.gl/ruF2CG4vxZHjtY1E6", 0);
