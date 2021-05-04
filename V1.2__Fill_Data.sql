@@ -210,12 +210,14 @@ BEGIN
 	-- Fill Donations
 	when 5 then
 		while cantidad >0 do
-        
-			call paymentAttemp(1);
+			
+            SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+            set @amount_int= rand()*999;
+			call paymentAttemp(1, @user_id, @amount_int);
             SET @last_id_in_paymentAttempts = LAST_INSERT_ID();
             
             if @status=1 then
-				call paymentTran(1);
+				call paymentTran(1, @user_id, @amount_int);
 				SET @last_id_in_paymentTransactions = LAST_INSERT_ID();
                 
 				select idpaymentStatus into @status from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
@@ -230,6 +232,7 @@ BEGIN
 				insert into donations (amount,message,checksum, idPaymentTransactions)
 				values (@amount,@message,@checksum, @last_id_in_paymentTransactions);
 				
+                
 				SET @last_id_in_donations = LAST_INSERT_ID();
                 
                 UPDATE paymentAttempts
@@ -240,6 +243,11 @@ BEGIN
 				SET referenceID=@last_id_in_donations, amount=@amount,checksum=@checksum, ipAddress=@ipAddress,computerName=@compName,description=@description, idUser=@user
 				WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
 				
+				SELECT idChannel into @channel_id FROM Channel ORDER BY RAND() LIMIT 1;
+                SELECT postTime, checksum into @post_time, @checksum FROM paymentTransactions WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
+                insert into donationsPerUser(idUser, idDonations, idChannel, postTime, checksum)
+                values (@user, @last_id_in_donations, @channel_id, @post_time, @checksum);
+                
 				SET cantidad = cantidad - 1;
             end if;
 		END WHILE;
@@ -252,14 +260,14 @@ DROP PROCEDURE IF EXISTS paymentTran;
 
 delimiter &&
 
-CREATE PROCEDURE paymentTran(IN opt int)
+CREATE PROCEDURE paymentTran(IN opt int, userID BIGINT, amount INT)
 BEGIN
 
     select date_format(
 		from_unixtime(
 			rand() * (unix_timestamp(now()) - unix_timestamp('2018-11-13 23:00:00'))+unix_timestamp('2018-11-13 23:00:00')), '%Y-%m-%d %H:%i:%s') INTO @post_time ;
              
-	SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+	set @user_id = userID;
 
 	select username into @user from users where idUser=@user_id;
 	set @title2= concat(" By: ", @user);
@@ -267,7 +275,7 @@ BEGIN
     set @compName2= concat("Desktop-",@user);
     set @compName = concat(@compName2, floor(999999*RAND()));
     
-    set @amount_int= rand()*99999999;
+    set @amount_int= amount;
     SELECT CAST( @amount_int AS DECIMAL(10,2)) AS decimal_value into @amount;
     
     set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
@@ -294,7 +302,7 @@ DROP PROCEDURE IF EXISTS paymentAttemp;
 
 delimiter &&
 
-CREATE PROCEDURE paymentAttemp(IN opt int)
+CREATE PROCEDURE paymentAttemp(IN opt int, userID BIGINT, amount INT)
 BEGIN
 
     select date_format(
@@ -304,8 +312,8 @@ BEGIN
 	select date_format(
 		from_unixtime(
 			rand() * (unix_timestamp(now()) - @post_time)+@post_time), '%Y-%m-%d %H:%i:%s') INTO @stampTime ;
-             
-	SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+       
+	set @user_id = userID;
     SELECT idMerchants INTO @merch FROM merchants ORDER BY RAND() LIMIT 1;
     SELECT idCurrency INTO @currency FROM Currency ORDER BY RAND() LIMIT 1;
     SELECT idPaymentStatus INTO @status FROM paymentStatus ORDER BY RAND() LIMIT 1;
@@ -318,7 +326,7 @@ BEGIN
 	select username into @user from users where idUser=@user_id;
 	set @title2= concat(" By: ", @user);
     
-    set @amount_int= rand()*99999999;
+    set @amount_int= amount;
     SELECT CAST( @amount_int AS DECIMAL(10,2)) AS decimal_value into @amount;
     
     set @merchNumber = floor(999999*RAND());
@@ -349,4 +357,4 @@ call filldata(1,10);
 call filldata(2,3);
 call filldata(3,30);
 call filldata(4,15);
-call filldata(5,10);
+call filldata(5,50);
