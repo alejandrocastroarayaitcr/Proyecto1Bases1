@@ -27,6 +27,17 @@ CREATE PROCEDURE registrar_suscripcion(
 )
 BEGIN
 
+DECLARE exit handler for SQLEXCEPTION
+ BEGIN
+  if @inicie_transaccion = 1 and transaccion_anterior = 0 then
+	ROLLBACK;
+  end if;
+  GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, 
+   @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+  SET @full_error = ("ERROR al registrar la suscripcion. Se ha hecho rollback.");
+  SELECT @full_error as mensaje_error;
+ END;
+
 SET autocommit = 0;
 
 SET @usuarioSuscriptor = (SELECT idUser from users where users.username = pUsernameSender);
@@ -65,4 +76,4 @@ end if;
 END $$
 DELIMITER ;
 
-  CALL registrar_suscripcion('ale123','casa3','PayPal','tier one','subscription','descriptionHTML','this is a transaction',current_time(),'imglink.com/123456.jpg',5.0,'$',20.0,'subscription','tier one subscription','AlePC','127.0.0.1',0)
+--  CALL registrar_suscripcion('ale123','maik','PayPal','tier two','subscription','descriptionHTML','this is a transaction',current_time(),'imglink.com/123456.jpg',5.0,'$',20.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);
