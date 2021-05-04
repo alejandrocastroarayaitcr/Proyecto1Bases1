@@ -848,14 +848,14 @@ insert into transactionSubType(`name`)
 values ("Donation");
 
 insert into Currency(name, symbol, code, region)
-values ("Euro", "€", "EUR", "Eurozone"), ("Dolar", "$", "USD", "USA"), ("Yen", "¥", "JPY", "Japan"), ("Colón", "₡", "CRC", "Costa Rica");
+values ("Dollar", "$", "USD", "USA");
 
 insert into paymentStatus(name)
 values("Accepted"),("In process"),("Declined");
 
 insert into merchants(name,merchantURL,iconURL,enabled)
-values ("Mcdonalds", "https://www.mcdonalds.co.cr/", "https://images.app.goo.gl/sAYT9hFoUUZT95Yb8", 1),
+values ("McDonalds", "https://www.mcdonalds.co.cr/", "https://images.app.goo.gl/sAYT9hFoUUZT95Yb8", 1),
 ("Logitech", "https://www.logitechg.com/es-roam", "https://images.app.goo.gl/GYBj1xURa1KFocfC9", 1),
 ("Playstation", "https://www.playstation.com/es-cr/", "https://images.app.goo.gl/xnNZBeUWHr9QV4AU9", 1),
 ("Pollolandia", "https://pollolandia.com/cr/index.php/component/users/?view=remind", "https://images.app.goo.gl/KrWHY9WT4ZimErhx9", 0),
-("Wallmart", "https://walmart.co.cr/", "https://images.app.goo.gl/ruF2CG4vxZHjtY1E6", 0);
+("Walmart", "https://walmart.co.cr/", "https://images.app.goo.gl/ruF2CG4vxZHjtY1E6", 0);
