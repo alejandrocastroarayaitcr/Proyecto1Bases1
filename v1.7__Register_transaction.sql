@@ -19,6 +19,17 @@ CREATE PROCEDURE registrar_transaccion(
 )
 BEGIN
 
+ DECLARE exit handler for SQLEXCEPTION
+ BEGIN
+  if @inicie_transaccion = 1 and transaccion_anterior = 0 then
+	ROLLBACK;
+ end if;
+GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, 
+@errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+ SET @full_error = ("ERROR al registrar la transaccion. Se ha hecho rollback.");
+SELECT @full_error as mensaje_error;
+ END;
+
 SET autocommit = 0;
 
 SET @usuario = (SELECT idUser from users where users.username = pSenderName);
@@ -39,12 +50,8 @@ VALUES(pTransactionSubType);
 
 SET @transaction_subtype = (SELECT IDTransactionSubType from transactionSubType where transactionSubType.idTransactionSubType = last_insert_id());
 
-INSERT INTO paymentAttempts(postTime,amount,currencySymbol,referenceNumber,errorNumber,merchantTransactionNumber,description,paymentTimeStamp,computerName,ipAddress,checksum,idUser,idmerchants,idpaymentStatus)
-VALUES(current_time(),pAmount,pCurrencySymbol,999999999999*RAND(),999999999999*RAND(),999999999999*RAND(),pDescription,current_time(),pComputerName,pIPAddress,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),@usuario,@merchant,@payment_status);
-
 INSERT INTO paymentTransactions(postTime,description,username,computerName,ipAddress,checksum,amount,referenceID,idUser,idTransactionType,idTransactionSubType)
 VALUES(current_time,pDescription,pSenderName,pComputerName,pIPAddress,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),pAmount,@transaction_subtype,@usuario,@transaction_type,@transaction_subtype);
-SELECT last_insert_id() as transaccionNumber;
 
 if @inicie_transaccion = 1 and transaccion_anterior = 0 then
 	COMMIT;
@@ -52,5 +59,4 @@ end if;
 
 END $$
 DELIMITER ;
-
- CALL registrar_transaccion('ale123','PayPal',20.0,'$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier 4 subscription',0);
+ -- CALL registrar_transaccion('ale123','PayPal',20.0,'$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier 4 subscription',0);
