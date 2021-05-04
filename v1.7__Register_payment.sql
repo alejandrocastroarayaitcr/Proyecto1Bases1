@@ -64,4 +64,3 @@ END $$
 DELIMITER ;
 
 -- CALL registrar_pago('ale123','PayPal',20.0,'$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier one subscription',0);
--- SELECT * FROM paymentAttempts;
