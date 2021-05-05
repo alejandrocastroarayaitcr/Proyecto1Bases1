@@ -7,7 +7,7 @@ var donations_for_channel = require('./routes/donations_for_channel');
 var all_donations_since = require('./routes/all_donations_since');
 
 app.listen(port,() => {
-    console.log(`Listening at htpp://localhost:${port}`)
+    console.log(`Escuchando en htpp://localhost:${port}`)
 });
 
 app.use('/top_categories_viewers',top_categories_viewers)
