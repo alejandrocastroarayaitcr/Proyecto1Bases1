@@ -42,6 +42,7 @@ out/
 /demo/node_modules/*
 /demo/.pnp
 /demo/.pnp.js
+**/node_modules
 
 # testing
 /demo/coverage
