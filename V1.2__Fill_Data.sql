@@ -315,7 +315,6 @@ BEGIN
        
 	set @user_id = userID;
     SELECT idMerchants INTO @merch FROM merchants ORDER BY RAND() LIMIT 1;
-    SELECT idCurrency INTO @currency FROM Currency ORDER BY RAND() LIMIT 1;
     SELECT idPaymentStatus INTO @status FROM paymentStatus ORDER BY RAND() LIMIT 1;
     
     select username into @user from users where idUser=@user_id;
@@ -347,8 +346,8 @@ BEGIN
 	set @error= Null;
   end if;
   
-  insert into paymentAttempts(`postTime`,`amount`,`merchantTransactionNumber`, `description`,`paymentTimeStamp`,`computerName`, `ipAddress`,`checksum`,`idUser`,`idmerchants`,`idCurrency`, `idpaymentStatus`, `errorNumber`)
-  values (@post_time, @amount, @merchNumber, @description, @stampTime, @compName, @ipAddress, @checksum_1, @user_id, @merch,@currency,@status, @error);
+  insert into paymentAttempts(`postTime`,`amount`,`merchantTransactionNumber`, `description`,`paymentTimeStamp`,`computerName`, `ipAddress`,`checksum`,`idUser`,`idmerchants`,`currencySymbol`, `idpaymentStatus`, `errorNumber`)
+  values (@post_time, @amount, @merchNumber, @description, @stampTime, @compName, @ipAddress, @checksum_1, @user_id, @merch,"$",@status, @error);
 	
 END &&
 

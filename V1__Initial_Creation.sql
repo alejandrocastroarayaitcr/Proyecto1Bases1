@@ -53,18 +53,6 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentStatus` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `XtreamDB`.`Currency`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `XtreamDB`.`Currency` (
-  `idCurrency` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(76) NOT NULL,
-  `region` VARCHAR(76) NULL,
-  `symbol` varchar(5) NOT NULL,
-  `code` varchar(15) NOT NULL,
-  PRIMARY KEY (`idCurrency`))
-ENGINE = InnoDB;
-
--- -----------------------------------------------------
 -- Table `XtreamDB`.`paymentAttempts`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
@@ -79,15 +67,14 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   `computerName` VARCHAR(55) NOT NULL,
   `ipAddress` VARCHAR(45) NOT NULL,
   `checksum` VARBINARY(300) NOT NULL,
+  `currencySymbol` varchar (5) not null,
   `idUser` BIGINT NOT NULL,
   `idmerchants` INT NOT NULL,
   `idpaymentStatus` INT NOT NULL,
-  `idCurrency` int NOT NULL,
   PRIMARY KEY (`idPaymentAttempts`),
   INDEX `fk_paymentAttempts_users_idx` (`idUser` ASC) VISIBLE,
   INDEX `fk_paymentAttempts_merchants1_idx` (`idmerchants` ASC) VISIBLE,
   INDEX `fk_paymentAttempts_paymentStatus1_idx` (`idpaymentStatus` ASC) VISIBLE,
-  INDEX `fk_paymentAttempts_Currency1_idx` (`idCurrency` ASC) VISIBLE,
   CONSTRAINT `fk_paymentAttempts_users`
     FOREIGN KEY (`idUser`)
     REFERENCES `XtreamDB`.`users` (`idUser`)
@@ -101,11 +88,6 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   CONSTRAINT `fk_paymentAttempts_paymentStatus1`
     FOREIGN KEY (`idpaymentStatus`)
     REFERENCES `XtreamDB`.`paymentStatus` (`idPaymentStatus`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_paymentAttempts_Currency1_idx`
-    FOREIGN KEY (`idCurrency`)
-    REFERENCES `XtreamDB`.`Currency` (`idCurrency`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)	
 ENGINE = InnoDB;
@@ -846,9 +828,6 @@ values ("P2P"),("Cancelation"),("Register");
 
 insert into transactionSubType(`name`)
 values ("Donation");
-
-insert into Currency(name, symbol, code, region)
-values ("Dollar", "$", "USD", "USA");
 
 insert into paymentStatus(name)
 values("Accepted"),("In process"),("Declined");
