@@ -1,8 +1,8 @@
 let config = {
     host    : 'localhost',
     user    : 'root',
-    password: '',
-    database: 'xtream'
+    password: '123456',
+    database: 'XtreamDB'
   };
   
   module.exports = config;
