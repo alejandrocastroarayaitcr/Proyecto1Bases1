@@ -1,8 +1,8 @@
 const express = require('express')
 let app = express.Router()
 
-app.get('/top_categories_viewers',function(req,res){
-    const {StoredProcedure} = require('./generic-class');    
+app.get('/',function(req,res){
+    const {StoredProcedure} = require('../generic-class');    
     const topCategoriesViewers = new StoredProcedure('top_categories_viewers',[]);
     topCategoriesViewers.executeSP = function(){
         this.connection.query(this.sql, (error, results, fields) => {
