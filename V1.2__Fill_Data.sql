@@ -146,8 +146,8 @@ BEGIN
 				 set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
 				 SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
 				 SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
-				 insert into Videos (`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
-				 values(@url, @size, @length, @quality, @type, @last_id_in_streams);
+				 insert into Videos (`url`,`size`,`length`,`deleted`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
+				 values(@url, @size, @length, @deleted, @quality, @type, @last_id_in_streams);
              end if;
             
             SET cantidad = cantidad - 1;
