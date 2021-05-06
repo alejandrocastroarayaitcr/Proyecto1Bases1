@@ -794,17 +794,17 @@ values(1,"Lolo", "Fernández", "LolitoFNDZ", "lolencioElCrack@gmail.com",1, 1000
 (9,"Francisco", "Franco", "xX_Franchesco_Xx", "arribaFranco@gmail.com",1, 1001011000101,"0x41C2ABF45E"),
 (10,"Luis", "Miguel", "eLSolazo", "luismiguelelcrack@hotmail.com",0, 1110010110100,"0x541AB2CCF12");
 
-insert into Channel ( `idChannel`,`displayName` ,`description` ,`pictureURL`,`live`,`idUser`)
-values(1,"Lolito", "Jejeje yepas jeje", "https://images.app.goo.gl/cpDD8XVikgPnEnJd9",0, 1),
-(2,"Tay-Lord", "momento xd", "https://images.app.goo.gl/HNA2H1Vz1GDaoCrv9",0, 2),
-(3,"Juancin", "Mi madre me dio la vida, pero Tusa las ganas de vivirla", "https://images.app.goo.gl/agBxQAekVfxux95A7",0, 3),
-(4,"Yuen", "Lo unico más duro en esta vida que un algoritmo NP-Duro, es no tenerte baby", "https://images.app.goo.gl/ufMstNaYFzmno8GM6",0, 4),
-(5,"Ale-Luya", "Simón", "https://images.app.goo.gl/iqNTDrC7zEkiZgn77",0, 5),
-(6,"Rubiu", "ust ust", "https://images.app.goo.gl/EibfqZS5EPee3zJ3A",0, 6),
+insert into Channel ( `idChannel`,`displayName` ,`description` ,`pictureURL`,`live`,`exclusiveVideos`,`idUser`)
+values(1,"Lolito", "Jejeje yepas jeje", "https://images.app.goo.gl/cpDD8XVikgPnEnJd9",0, 0, 1),
+(2,"Tay-Lord", "momento xd", "https://images.app.goo.gl/HNA2H1Vz1GDaoCrv9",0, 0,2),
+(3,"Juancin", "Mi madre me dio la vida, pero Tusa las ganas de vivirla", "https://images.app.goo.gl/agBxQAekVfxux95A7",0, 0,3),
+(4,"Yuen", "Lo unico más duro en esta vida que un algoritmo NP-Duro, es no tenerte baby", "https://images.app.goo.gl/ufMstNaYFzmno8GM6",0, 0,4),
+(5,"Ale-Luya", "Simón", "https://images.app.goo.gl/iqNTDrC7zEkiZgn77",0, 0,5),
+(6,"Rubiu", "ust ust", "https://images.app.goo.gl/EibfqZS5EPee3zJ3A",0, 0,6),
 (7,"Charly Alvarado", "Un chuzo de mae", "https://images.app.goo.gl/VWkNwDSPrUwpDUrf7",0, 7),
-(8,"Florentino", "Ni tan superman va a ser tan Super como mi liga. HALA MADRID!. SIUUUU", "https://images.app.goo.gl/gMuiRSMGrp7f9coe6", 0,8),
-(9,"Franco", "Arriba España. Si España te ataca, no hay error, no hay error", "https://images.app.goo.gl/Di6caAhjUKbw8BKx7",0, 9),
-(10,"LuisMi", "Si tú me hubieras dicho siempre la verdad, Si hubieras respondido cuando te llamé, Si hubieras amado cuando te amé, Serías en mis sueños la mejor mujer… ", "https://images.app.goo.gl/PudHayh5p9ZofEAfA",0, 10);
+(8,"Florentino", "Ni tan superman va a ser tan Super como mi liga. HALA MADRID!. SIUUUU", "https://images.app.goo.gl/gMuiRSMGrp7f9coe6", 0,0,8),
+(9,"Franco", "Arriba España. Si España te ataca, no hay error, no hay error", "https://images.app.goo.gl/Di6caAhjUKbw8BKx7",0, 0,9),
+(10,"LuisMi", "Si tú me hubieras dicho siempre la verdad, Si hubieras respondido cuando te llamé, Si hubieras amado cuando te amé, Serías en mis sueños la mejor mujer… ", "https://images.app.goo.gl/PudHayh5p9ZofEAfA",0, 0,10);
 
 insert into categories (`name`)
 values ("Legue Of Legends"), ("The Binding Of Isaac"), ("Warzone"), ("Genshi Impact"), ("Just Talking"), ("ASMR"), ("Free Fire"), ("Clash Royale"), ("Mongos"), 
