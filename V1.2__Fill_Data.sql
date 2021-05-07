@@ -146,8 +146,8 @@ BEGIN
 				 set @length=unix_timestamp(@end_time)-unix_timestamp(post_time);
 				 SELECT idvideoQuality INTO @quality FROM VideoQuality ORDER BY RAND() LIMIT 1;
 				 SELECT idalloweddatatype INTO @type FROM AllowedDatatypes ORDER BY RAND() LIMIT 1;
-				 insert into Videos (`url`,`size`,`length`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
-				 values(@url, @size, @length, @quality, @type, @last_id_in_streams);
+				 insert into Videos (`url`,`size`,`length`,`deleted`,`videoQualityId`,`alloweddatatypeid`,`idStreams`)
+				 values(@url, @size, @length, @deleted, @quality, @type, @last_id_in_streams);
              end if;
             
             SET cantidad = cantidad - 1;
@@ -214,11 +214,12 @@ BEGIN
             SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
             set @amount_int= rand()*999;
 			call paymentAttemp(1, @user_id, @amount_int);
-            SET @last_id_in_paymentAttempts = LAST_INSERT_ID();
+            SET @last_id_in_idPaymentTransactions = LAST_INSERT_ID();
             
             if @status=1 then
 				call paymentTran(1, @user_id, @amount_int);
-				SET @last_id_in_paymentTransactions = LAST_INSERT_ID();
+				SET @last_id_in_userBalance = LAST_INSERT_ID();
+                select idPaymentTransactions into @last_id_in_paymentTransactions from userBalance where idUserBalance=LAST_INSERT_ID();
                 
 				select idpaymentStatus into @status from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
 				select idUser into @user from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
@@ -292,7 +293,17 @@ BEGIN
   
   insert into paymentTransactions(`postTime`,`description`,`computerName`, `ipAddress`,`checksum`,`amount`,`idUser`,`idTransactionType`,`idTransactionSubType`)
   values (@post_time, @description, @compName, @ipAddress, @checksum_1,@amount,@user_id,@ttype, @tsubtype);
-	
+  
+  SET @last_id_in_paymentTransactions = LAST_INSERT_ID();
+  
+  select XtreamPercentage into @plataformPercentage from transactionSubType where idTransactionSubType=@tsubtype;
+  set @userPercentage=100-@plataformPercentage;
+  set @userAmount=(@userPercentage*@amount)/100;
+  set @xtreamAmount=@amount-@userAmount;
+  
+  insert into userBalance (`amount`,`checksum`,`lastUpdate`,`percentageEarned`,`idUser`,`idPaymentTransactions`)
+  values (@userAmount, @checksum_1,@post_time,@userPercentage,@user_id,@last_id_in_paymentTransactions), (@xtreamAmount, @checksum_1,@post_time,@plataformPercentage,1,@last_id_in_paymentTransactions);
+  
 END &&
 
 delimiter ;
@@ -315,7 +326,6 @@ BEGIN
        
 	set @user_id = userID;
     SELECT idMerchants INTO @merch FROM merchants ORDER BY RAND() LIMIT 1;
-    SELECT idCurrency INTO @currency FROM Currency ORDER BY RAND() LIMIT 1;
     SELECT idPaymentStatus INTO @status FROM paymentStatus ORDER BY RAND() LIMIT 1;
     
     select username into @user from users where idUser=@user_id;
@@ -347,8 +357,8 @@ BEGIN
 	set @error= Null;
   end if;
   
-  insert into paymentAttempts(`postTime`,`amount`,`merchantTransactionNumber`, `description`,`paymentTimeStamp`,`computerName`, `ipAddress`,`checksum`,`idUser`,`idmerchants`,`idCurrency`, `idpaymentStatus`, `errorNumber`)
-  values (@post_time, @amount, @merchNumber, @description, @stampTime, @compName, @ipAddress, @checksum_1, @user_id, @merch,@currency,@status, @error);
+  insert into paymentAttempts(`postTime`,`amount`,`merchantTransactionNumber`, `description`,`paymentTimeStamp`,`computerName`, `ipAddress`,`checksum`,`idUser`,`idmerchants`,`currencySymbol`, `idpaymentStatus`, `errorNumber`)
+  values (@post_time, @amount, @merchNumber, @description, @stampTime, @compName, @ipAddress, @checksum_1, @user_id, @merch,"$",@status, @error);
 	
 END &&
 
