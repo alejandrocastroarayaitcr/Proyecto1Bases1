@@ -3,10 +3,10 @@
 -- si tienen un rating menor a 3 son low rated streamers. Su categoria segun su rating se llama rating_category y es una columna dinamica
 -- Como es una distribucion de todos los streamers, si se suma la cantidad de streamers de cada categoria da el total de streamers
 
-SELECT COUNT(users.idUser) as streamer_number,
-CASE WHEN rating > 4 THEN 'Top rated streamer'
-WHEN rating <= 4 and rating >= 3 THEN 'Average rated streamer'
-ELSE 'Low rated streamer'
+SELECT COUNT(users.idUser) as streamer_amount,
+CASE WHEN rating > 4 THEN 'Top rated streamers'
+WHEN rating <= 4 and rating >= 3 THEN 'Average rated streamers'
+ELSE 'Low rated streamers'
 END AS rating_category
 FROM users
 JOIN ratings ON users.idUser=ratings.idUser

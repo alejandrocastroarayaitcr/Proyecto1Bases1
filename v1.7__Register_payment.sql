@@ -5,9 +5,9 @@ DROP PROCEDURE IF EXISTS registrar_pago;
 DELIMITER $$
 
 CREATE PROCEDURE registrar_pago(
+	IN pSubscriptionTypeName varchar(76),
     IN pSenderName varchar(45),
     IN pMerchant varchar(55),
-	IN pAmount decimal(10,2),
     IN pCurrencySymbol VARCHAR(45),
 	IN pDescription VARCHAR(55),
     IN pXTreamPercentage decimal(5,2),
@@ -47,10 +47,12 @@ VALUES('In progress');
 
 SET @payment_status = (SELECT idPaymentStatus from paymentStatus where paymentStatus.idPaymentStatus = last_insert_id());
 
-INSERT INTO paymentAttempts(postTime,amount,currencySymbol,referenceNumber,errorNumber,merchantTransactionNumber,description,paymentTimeStamp,computerName,ipAddress,checksum,idUser,idmerchants,idpaymentStatus)
-VALUES(current_time(),pAmount,pCurrencySymbol,999999999999*RAND(),999999999999*RAND(),999999999999*RAND(),pDescription,current_time(),pComputerName,pIPAddress,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),@usuario,@merchant,@payment_status);
+SET @amount = (SELECT amount from subscriptionType where subscriptionType.name = pSubscriptionTypeName);
 
-CALL registrar_transaccion(pSenderName,pMerchant,pAmount,pCurrencySymbol,pDescription,pXTreamPercentage,pComputerName,pIPAddress,pTransactionType,pTransactionSubType,1);
+INSERT INTO paymentAttempts(postTime,amount,currencySymbol,referenceNumber,errorNumber,merchantTransactionNumber,description,paymentTimeStamp,computerName,ipAddress,checksum,idUser,idmerchants,idpaymentStatus)
+VALUES(current_time(),@amount,pCurrencySymbol,999999999999*RAND(),999999999999*RAND(),999999999999*RAND(),pDescription,current_time(),pComputerName,pIPAddress,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),@usuario,@merchant,@payment_status);
+
+CALL registrar_transaccion(pSubscriptionTypeName,pSenderName,pCurrencySymbol,pDescription,pXTreamPercentage,pComputerName,pIPAddress,pTransactionType,pTransactionSubType,1);
 
 UPDATE paymentStatus
 SET paymentStatus.name = 'Accepted'
@@ -63,4 +65,5 @@ end if;
 END $$
 DELIMITER ;
 
--- CALL registrar_pago('ale123','PayPal',20.0,'$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier one subscription',0);
+CALL registrar_pago('Tier one subscription','LolitoFNDZ','Walmart','$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier one subscription',0);
+SELECT * FROM paymentAttempts;

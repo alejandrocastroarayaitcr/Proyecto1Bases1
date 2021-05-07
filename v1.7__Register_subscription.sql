@@ -7,16 +7,13 @@ DROP PROCEDURE IF EXISTS registrar_suscripcion;
 DELIMITER $$
 
 CREATE PROCEDURE registrar_suscripcion(
+	IN pSubscriptionTypeName VARCHAR(76),
 	IN pUsernameSender VARCHAR(70),
     IN pUsernameReceiver VARCHAR(45),
     IN pMerchantName VARCHAR(55),
     IN pTierName VARCHAR(45),
-	IN pTitle VARCHAR(55),
-    IN pDescriptionHTML VARCHAR(128),
     IN pDescription VARCHAR(45),
     IN pEndTime DATETIME,
-    IN pIconURL varchar(45),
-    IN pAmount decimal(10,2),
     IN pCurrencySymbol varchar(45),
     IN pXTreamPercentage decimal(5,2),
     IN pTransactionType varchar(45),
@@ -54,15 +51,20 @@ if @inicie_transaccion = 0 and transaccion_anterior = 0 then
     SET @inicie_transaccion = 1;
 end if;
 
-CALL registrar_pago(pUsernameSender,pMerchantName,pAmount,pCurrencySymbol,pDescription,pXtreamPercentage,pComputerName,pIPAddress,pTransactionType,pTransactionSubType,@inicie_transaccion);
+CALL registrar_pago(pSubscriptionTypeName,pUsernameSender,pMerchantName,pCurrencySymbol,pDescription,pXtreamPercentage,pComputerName,pIPAddress,pTransactionType,pTransactionSubType,@inicie_transaccion);
 SET @payment_transaction = last_insert_id();
 
+SET @amount = (SELECT amount from subscriptionType where subscriptionType.name = pSubscriptionTypeName);
+
 INSERT INTO recurrenceType(name,valueToAdd,datePart)
-VALUES(@canal,pAmount,DATE_FORMAT(now(),'%d-%m-%Y'));
+VALUES(@canal,@amount,DATE_FORMAT(now(),'%d-%m-%Y'));
 
 SET @recurrence_id = last_insert_id();
-INSERT INTO subscriptions(title,descriptionHTML,startTime,endTime,enabled,iconURL,checksum,amount,idRecurrenceType,idTierLevel,idPaymentTransactions)
-VALUES(pTitle,pDescriptionHTML,current_time(),pEndTime,1,pIconURL,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),pAmount,@recurrence_id,@tiername,@payment_transaction);
+
+set @subscriptionType_id = (SELECT idSubscriptionType from subscriptionType where subscriptionType.name = pSubscriptionTypeName);
+
+INSERT INTO subscriptions(startTime,endTime,enabled,checksum,idRecurrenceType,idTierLevel,idPaymentTransactions,idSubscriptionType)
+VALUES(current_time(),pEndTime,1,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),@recurrence_id,@tiername,@payment_transaction,@subscriptionType_id);
 
 SET @recent_subscriptionid = last_insert_id();
 
@@ -76,4 +78,4 @@ end if;
 END $$
 DELIMITER ;
 
---  CALL registrar_suscripcion('ale123','maik','PayPal','tier two','subscription','descriptionHTML','this is a transaction',current_time(),'imglink.com/123456.jpg',5.0,'$',20.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);
+CALL registrar_suscripcion('Tier one subscription','LolitoFNDZ','Yuen777','Walmart','Tier one','subscription by LolitoFNDZ',current_time(),'$',5.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);

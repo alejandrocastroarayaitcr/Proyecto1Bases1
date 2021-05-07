@@ -5,9 +5,8 @@ DROP PROCEDURE IF EXISTS registrar_transaccion;
 DELIMITER $$
 
 CREATE PROCEDURE registrar_transaccion(
+	IN pSubscriptionTypeName varchar(76),
     IN pSenderName varchar(45),
-    IN pMerchant varchar(55),
-	IN pAmount decimal(10,2),
     IN pCurrencySymbol VARCHAR(45),
 	IN pDescription VARCHAR(55),
     IN pXTreamPercentage decimal(5,2),
@@ -49,9 +48,10 @@ INSERT INTO transactionSubType(name)
 VALUES(pTransactionSubType);
 
 SET @transaction_subtype = (SELECT IDTransactionSubType from transactionSubType where transactionSubType.idTransactionSubType = last_insert_id());
+SET @amount = (SELECT amount from subscriptionType where subscriptionType.name = pSubscriptionTypeName);
 
-INSERT INTO paymentTransactions(postTime,description,username,computerName,ipAddress,checksum,amount,referenceID,idUser,idTransactionType,idTransactionSubType)
-VALUES(current_time,pDescription,pSenderName,pComputerName,pIPAddress,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),pAmount,@transaction_subtype,@usuario,@transaction_type,@transaction_subtype);
+INSERT INTO paymentTransactions(postTime,description,computerName,ipAddress,checksum,amount,referenceID,idUser,idTransactionType,idTransactionSubType)
+VALUES(current_time,pDescription,pComputerName,pIPAddress,sha1(concat(@usuario,current_time(),char(round(rand()*25)+97))),@amount,rand()*99,@usuario,@transaction_type,@transaction_subtype);
 
 if @inicie_transaccion = 1 and transaccion_anterior = 0 then
 	COMMIT;
@@ -59,4 +59,5 @@ end if;
 
 END $$
 DELIMITER ;
- -- CALL registrar_transaccion('ale123','PayPal',20.0,'$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier 4 subscription',0);
+  CALL registrar_transaccion('Tier one subscription','LolitoFNDZ','$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier 4 subscription',0);
+  SELECT * FROM paymentTransactions;

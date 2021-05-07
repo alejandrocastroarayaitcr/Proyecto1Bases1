@@ -2,6 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS `XtreamDB`.`subscriptionType` (
   `idSubscriptionType` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(76) NOT NULL,
   `title` VARCHAR(76) NOT NULL ,
   `descriptionHTML` VARCHAR(128) NOT NULL,
   `iconURL` VARCHAR(76) NOT NULL,
@@ -113,6 +114,12 @@ values ("McDonalds", "https://www.mcdonalds.co.cr/", "https://images.app.goo.gl/
 ("Playstation", "https://www.playstation.com/es-cr/", "https://images.app.goo.gl/xnNZBeUWHr9QV4AU9", 1),
 ("Pollolandia", "https://pollolandia.com/cr/index.php/component/users/?view=remind", "https://images.app.goo.gl/KrWHY9WT4ZimErhx9", 0),
 ("Walmart", "https://walmart.co.cr/", "https://images.app.goo.gl/ruF2CG4vxZHjtY1E6", 0);
+
+insert into subscriptionType(name,title,descriptionHTML,iconURL,amount)
+values('Tier one subscription','Tiered subscription','http://xtream.tv/19381247-channel/subscription/tier-one','imgur.com/i832Akj9.png',5.0);
+
+INSERT INTO tierLevel(name,description,price)
+VALUES('Tier one','This is the most basic subscription tier.','5.0');
 
 
 
