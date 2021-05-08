@@ -54,6 +54,9 @@ CREATE TABLE `XtreamDB`.`userBalance` (
     REFERENCES `XtreamDB`.`paymentTransactions` (`idPaymentTransactions`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+    
+ALTER TABLE `XtreamDB`.`paymentTransactions` 
+ADD COLUMN `idStreamer` BIGINT NULL AFTER `referenceID`;
 
     -- Script de llenado
 insert into users (idUser, firstname, lastname, username, email, verified, password, checksum)
@@ -105,7 +108,7 @@ insert into transactionSubType(`name`,`XtreamPercentage`)
 values ("Donation",0), ("Subscription",20.2);
 
 insert into paymentStatus(name)
-values("Accepted"),("In process"),("Declined");
+values("Accepted"),("In process"),("Declined"), ("Refunded");
 
 insert into merchants(name,merchantURL,iconURL,enabled)
 values ("McDonalds", "https://www.mcdonalds.co.cr/", "https://images.app.goo.gl/sAYT9hFoUUZT95Yb8", 1),

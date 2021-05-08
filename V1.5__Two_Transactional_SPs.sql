@@ -16,13 +16,12 @@ BEGIN
 	
     select idpaymentStatus into @status from paymentAttempts where merchantTransactionNumber=tran;
     if @status=2 then
-    set @tran=tran;
 
 		if accepted=0 then
 			set @status=3;
 			update paymentAttempts
 			SET idpaymentStatus=@status
-			WHERE merchantTransactionNumber=@tran;
+			WHERE merchantTransactionNumber=tran;
 			
 		else
 			set @status=1;
@@ -44,19 +43,13 @@ BEGIN
 			when 1 then
 					
 					select username into @username from users where idUser=@user_id;
-					
-					select checksum into @checksum_1 from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-							
-					set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
-							
-					select computerName into @compName from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-							
-					select description into @description from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+						
+					select computerName, description, checksum, ipAddress  into @compName, @description, @checksum_1, @ipAddress from paymentAttempts 
+                    WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
 							
 					set @message= concat("Hola bro, salu2 te desea ", @username);
 					insert into donations (amount,message,checksum, idPaymentTransactions)
 					values (@amount,@message,@checksum_1, @last_id_in_paymentTransactions);
-							
 							
 					SET @last_id_in_donations = LAST_INSERT_ID();
 							
@@ -69,13 +62,58 @@ BEGIN
 					WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
 					
 					SELECT idChannel into @channel_id FROM Channel ORDER BY RAND() LIMIT 1;
-					SELECT postTime, checksum into @post_time, @checksum FROM paymentTransactions WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
+					SELECT postTime into @post_time FROM paymentTransactions WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
 					insert into donationsPerUser(idUser, idDonations, idChannel, postTime, checksum)
 					values (@user_id, @last_id_in_donations, @channel_id, @post_time, @checksum_1);
+                    
 			end case;
 		end if;
 	END IF;
 END$$
 DELIMITER ;
+
+-- Rembolsos
+DROP PROCEDURE IF EXISTS refunds;
+
+DELIMITER %%
+
+CREATE PROCEDURE refunds(
+    IN tran varchar(45)
+)
+BEGIN
+	
+    select idpaymentStatus into @status from paymentAttempts where merchantTransactionNumber=tran;
+    if @status=1 then
+    
+			set @status=4;
+			update paymentAttempts
+			SET idpaymentStatus=@status
+			WHERE merchantTransactionNumber=tran;
+			
+			SELECT referenceNumber INTO @reference FROM paymentAttempts WHERE merchantTransactionNumber=tran;
+            
+			update paymentTransactions
+			SET amount=0, description="REFUNDED"
+			WHERE referenceID=@reference;
+			
+			SELECT idPaymentTransactions,idTransactionSubType INTO @idPayment,@stype from paymentTransactions WHERE referenceID=@reference;
+							
+			update userBalance
+			SET amount=0, lastUpdate=now(), percentageEarned=0
+			WHERE idPaymentTransactions=@idPayment;
+				
+			case @stype
+			
+			when 1 then
+            
+				update donations
+				SET amount=0
+				WHERE idDonations=@reference;
+                
+			end case;
+	end if;
+END%%
+DELIMITER ;
+
 
 
