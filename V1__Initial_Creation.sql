@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `XtreamDB`.`paymentAttempts` (
   `amount` DECIMAL(10,2) NOT NULL,
   `referenceNumber` BIGINT NULL,
   `errorNumber` BIGINT NULL,
-  `merchantTransactionNumber` BIGINT NOT NULL,
+  `merchantTransactionNumber` NVARCHAR(8000),
   `description` NVARCHAR(8000) NOT NULL,
   `paymentTimeStamp` DATETIME NOT NULL,
   `computerName` VARCHAR(55) NOT NULL,
