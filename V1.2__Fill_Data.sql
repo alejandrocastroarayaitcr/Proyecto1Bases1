@@ -212,26 +212,39 @@ BEGIN
 		while cantidad >0 do
 			
             SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+            
             set @amount_int= rand()*999;
+            
 			call paymentAttemp(1, @user_id, @amount_int);
-            SET @last_id_in_idPaymentTransactions = LAST_INSERT_ID();
+            
+            SET @last_id_in_paymentAttempts = LAST_INSERT_ID();
+            
+            select idpaymentStatus into @status from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
             
             if @status=1 then
+            
 				call paymentTran(1, @user_id, @amount_int);
-				SET @last_id_in_userBalance = LAST_INSERT_ID();
-                select idPaymentTransactions into @last_id_in_paymentTransactions from userBalance where idUserBalance=LAST_INSERT_ID();
                 
-				select idpaymentStatus into @status from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-				select idUser into @user from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+                select username into @username from users where idUser=@user_id;
+                
+				SET @last_id_in_userBalance = LAST_INSERT_ID();
+                
+                select idPaymentTransactions into @last_id_in_paymentTransactions from userBalance where idUserBalance=LAST_INSERT_ID();
+		
 				select amount into @amount from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-				select checksum into @checksum from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+		
+				select checksum into @checksum_1 from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+                
                 set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
+                
 				select computerName into @compName from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+                
 				select description into @description from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
 				
-                set @message= "Hola bro, salu2";
+                set @message= concat("Hola bro, salu2 te desea ", @username);
+                
 				insert into donations (amount,message,checksum, idPaymentTransactions)
-				values (@amount,@message,@checksum, @last_id_in_paymentTransactions);
+				values (@amount,@message,@checksum_1, @last_id_in_paymentTransactions);
 				
                 
 				SET @last_id_in_donations = LAST_INSERT_ID();
@@ -241,13 +254,13 @@ BEGIN
 				WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
 				
 				UPDATE paymentTransactions
-				SET referenceID=@last_id_in_donations, amount=@amount,checksum=@checksum, ipAddress=@ipAddress,computerName=@compName,description=@description, idUser=@user
+				SET referenceID=@last_id_in_donations, amount=@amount,checksum=@checksum_1, ipAddress=@ipAddress,computerName=@compName,description=@description, idUser=@user_id
 				WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
 				
 				SELECT idChannel into @channel_id FROM Channel ORDER BY RAND() LIMIT 1;
                 SELECT postTime, checksum into @post_time, @checksum FROM paymentTransactions WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
                 insert into donationsPerUser(idUser, idDonations, idChannel, postTime, checksum)
-                values (@user, @last_id_in_donations, @channel_id, @post_time, @checksum);
+                values (@user_id, @last_id_in_donations, @channel_id, @post_time, @checksum_1);
                 
 				SET cantidad = cantidad - 1;
             end if;
@@ -261,7 +274,7 @@ DROP PROCEDURE IF EXISTS paymentTran;
 
 delimiter &&
 
-CREATE PROCEDURE paymentTran(IN opt int, userID BIGINT, amount INT)
+CREATE PROCEDURE paymentTran(IN opt int, in userID BIGINT, in amount INT)
 BEGIN
 
     select date_format(
@@ -309,6 +322,7 @@ END &&
 delimiter ;
 
 
+
 DROP PROCEDURE IF EXISTS paymentAttemp;
 
 delimiter &&
@@ -339,7 +353,7 @@ BEGIN
     set @amount_int= amount;
     SELECT CAST( @amount_int AS DECIMAL(10,2)) AS decimal_value into @amount;
     
-    set @merchNumber = floor(999999*RAND());
+    set @merchNumber = ".";
 	set @checksum_1 = concat("checksum", 9999999*RAND() );
     
     set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
@@ -359,6 +373,16 @@ BEGIN
   
   insert into paymentAttempts(`postTime`,`amount`,`merchantTransactionNumber`, `description`,`paymentTimeStamp`,`computerName`, `ipAddress`,`checksum`,`idUser`,`idmerchants`,`currencySymbol`, `idpaymentStatus`, `errorNumber`)
   values (@post_time, @amount, @merchNumber, @description, @stampTime, @compName, @ipAddress, @checksum_1, @user_id, @merch,"$",@status, @error);
+  
+  SELECT name INTO @merchant from merchants where idMerchants=@merch;
+  
+  SET @last_id_in_idPayment = LAST_INSERT_ID();
+  
+  set @merchNumber= concat("PAYMENT-",@merchant,@last_id_in_idPayment);
+  
+  UPDATE paymentAttempts
+  SET merchantTransactionNumber=@merchNumber
+  WHERE idPaymentAttempts=@last_id_in_idPayment;
 	
 END &&
 

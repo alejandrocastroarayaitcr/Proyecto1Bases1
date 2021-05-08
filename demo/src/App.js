@@ -1,13 +1,27 @@
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import Categories from './components/Categories'
+import ChannelItems from './components/ChannelItems'
+
+const urlCategories = 'http://localhost:3000/top_categories_viewers'
+
 function App() {
+  const [categories, setCategories] = useState([])
+
+  useEffect(()=>{
+    axios.get(urlCategories).then(r=>{
+      setCategories(r.data)
+    })
+  }, [])
+
   return (
     <div>
       <header className="grid">
         <h1 className="header-logo">XTream</h1>
       </header>
-      <div className="container grid">
-        <p>Esto es un texto de prueba</p>
-        <p>Esto es un texto de prueba</p>
-        <p>Esto es un texto de prueba</p>
+      <div>
+        <Categories categoriesList={categories}/>
+        <ChannelItems categories={categories}/>
       </div>
     </div>
   );

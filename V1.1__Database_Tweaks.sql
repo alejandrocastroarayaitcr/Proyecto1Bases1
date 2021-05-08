@@ -55,7 +55,7 @@ CREATE TABLE `XtreamDB`.`userBalance` (
     REFERENCES `XtreamDB`.`paymentTransactions` (`idPaymentTransactions`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
-    select * from users;
+
     -- Script de llenado
 insert into users (idUser, firstname, lastname, username, email, verified, password, checksum)
 values (1,"X", "-Tream", "X-Tream", "xtream@gmail.com",1, 100010101001001110,"0x62736A696F"),

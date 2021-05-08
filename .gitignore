@@ -39,6 +39,7 @@ out/
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+/readapi/node_modules/*
 /demo/node_modules/*
 /demo/.pnp
 /demo/.pnp.js
