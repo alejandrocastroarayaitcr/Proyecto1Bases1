@@ -225,6 +225,8 @@ BEGIN
             
 				call paymentTran(1, @user_id, @amount_int);
                 
+                select username into @username from users where idUser=@user_id;
+                
 				SET @last_id_in_userBalance = LAST_INSERT_ID();
                 
                 select idPaymentTransactions into @last_id_in_paymentTransactions from userBalance where idUserBalance=LAST_INSERT_ID();
@@ -239,7 +241,8 @@ BEGIN
                 
 				select description into @description from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
 				
-                set @message= "Hola bro, salu2";
+                set @message= concat("Hola bro, salu2 te desea ", @username);
+                
 				insert into donations (amount,message,checksum, idPaymentTransactions)
 				values (@amount,@message,@checksum_1, @last_id_in_paymentTransactions);
 				
