@@ -5,7 +5,7 @@ import ChannelItem from './ChanneItem'
 const urlBase = 'http://localhost:3000/top_lives_streams_for_category?categoryName='
 
 function ChannelItems(props){
-    const [channels, setChannels] = useState([])
+    const [channels, setChannels] = useState(new Map())
 
     let categories = props.categories.slice(0, 3)
 
@@ -14,7 +14,7 @@ function ChannelItems(props){
         .then(r => {
             setChannels(r)
         })
-    }, [categories])
+    }, [categories.length])
 
     return (<div className="channel-items grid">
             {generateCategories(categories, channels)}
@@ -28,20 +28,24 @@ async function fetchChannels(categories){
         results.set(categories[i].Category, await (await axios(urlBase+categories[i].Category)).data)
     }
 
-    return Array.from(results)
+    return results
 }
 
 function generateCategories(categories, channels){
     return categories.map((category, index)=>{
-        return (<li key={index}>
+        let channel = channels.get(category.Category)
+        
+        return (<li key={index} className="channels-container">
             <p className="title"><strong>{category.Category}</strong></p>
-            {generateChannels(channels)}
+            {generateChannels(channel)}
         </li>)
     })
 }
 
 function generateChannels(channels){
-    console.log(channels)
+    return (channels === undefined) ? (<div></div>) : channels.map((channel, index)=>
+        <ChannelItem key={index} channelItem={channel}/>
+    )
 }
 
 export default ChannelItems

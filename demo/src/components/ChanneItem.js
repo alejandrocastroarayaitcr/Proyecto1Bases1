@@ -1,10 +1,10 @@
 function ChannelItem(props){
     const ChannelItem = props.channelItem
 
-    return (<div className="category container grid">
-        <p><strong>{ChannelItem.title}</strong></p>
-        <p><strong>{ChannelItem.ChannelName}</strong></p>
-        <p>{ChannelItem.currentViewers}</p>
+    return (<div className="channel-item">
+        <p className="title"><strong>{ChannelItem.title}</strong></p>
+        <p className="title"><strong>Canal: </strong>{ChannelItem.ChannelName}</p>
+        <p className="sub-title"><strong>Espectadores:</strong> {ChannelItem.currentViewers}</p>
     </div>)
 }
 

@@ -106,7 +106,7 @@ li {
   font-size: 1.2em;
 }
 
-.category:hover{
+.channel-item:hover, .category:hover{
   cursor: pointer;
   filter: brightness(96%);
   transform: scale(1.1);
@@ -119,7 +119,36 @@ li {
   color: var(--primary-dark-color);
 }
 
+.sub-title{
+  font-size: 1.2em;
+  box-sizing: border-box;
+  padding: 10px 20px 5px 20px;
+  color: black;
+}
+
 .channel-items{
-  justify-content: flex-start;
+  width: 100%;
+  justify-content: center;
   justify-items: flex-start;
+}
+
+.channels-container{
+  width: 100%;
+  justify-self: center;
+  padding: 0 20px 20px 20px;
+  box-sizing: border-box;
+}
+
+.channel-item{
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 20px 10px;
+  box-shadow: 0px 3px 10px var(--primary-color-shadow);
+}
+
+.channel-item .title{
+  color: black;
+  font-size: 1.2em;
 }
