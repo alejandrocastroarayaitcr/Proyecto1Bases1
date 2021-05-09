@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Categories from './components/Categories'
-import ChannelItems from './components/ChannelItems'
+import Categories from '../components/Categories'
+import ChannelItems from '../components/ChannelItems'
 
 const urlCategories = 'http://localhost:3000/top_categories_viewers'
 
@@ -16,9 +16,6 @@ function App() {
 
   return (
     <div>
-      <header className="grid">
-        <h1 className="header-logo">XTream</h1>
-      </header>
       <div>
         <Categories categoriesList={categories}/>
         <ChannelItems categories={categories}/>
