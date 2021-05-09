@@ -34,8 +34,8 @@ BEGIN
 				set streamer_id=0;
 				set user_id=0;
 				while streamer_id=user_id do
-					SELECT idUser INTO streamer_id FROM users ORDER BY RAND() LIMIT 1;
-					SELECT idUser INTO user_id FROM users ORDER BY RAND() LIMIT 1;
+					SELECT idUser INTO streamer_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
+					SELECT idUser INTO user_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
 				end while;
 				
 				INSERT INTO ratings (rating, postTime, idUser, idStreamer, checksum, ipAddress) 
@@ -58,8 +58,8 @@ BEGIN
 			set streamer_id=0;
             set user_id=0;
             while streamer_id=user_id do
-				SELECT idUser INTO streamer_id FROM users ORDER BY RAND() LIMIT 1;
-				SELECT idUser INTO user_id FROM users ORDER BY RAND() LIMIT 1;
+				SELECT idUser INTO streamer_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
+				SELECT idUser INTO user_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
 			end while;
 			
 			INSERT INTO BlackList  
@@ -160,11 +160,11 @@ BEGIN
         
 			SELECT idStreams INTO @stream_id FROM streams ORDER BY RAND() LIMIT 1;
             SELECT idChannel INTO @streamer_id FROM streams where idStreams=@stream_id;
-            SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+            SELECT idUser INTO @user_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
             SELECT idStreamEventType INTO @EventType FROM StreamEventType ORDER BY RAND() LIMIT 1;
             
             while @streamer_id=@user_id do
-				SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+				SELECT idUser INTO @user_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
 			end while;
             
             SELECT date INTO @time1 FROM streams where idStreams=@stream_id;
@@ -211,7 +211,7 @@ BEGIN
 	when 5 then
 		while cantidad >0 do
 			
-            SELECT idUser INTO @user_id FROM users ORDER BY RAND() LIMIT 1;
+            SELECT idUser INTO @user_id FROM users where idUser<>1 ORDER BY RAND() LIMIT 1;
             
             set @amount_int= rand()*999;
             
@@ -221,25 +221,22 @@ BEGIN
             
             select idpaymentStatus into @status from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
             
+            SELECT idChannel into @channel_id FROM Channel ORDER BY RAND() LIMIT 1;
+            select idUser into @streamer FROM Channel where idChannel=@channel_id; 
+            
             if @status=1 then
             
-				call paymentTran(1, @user_id, @amount_int);
+				call paymentTran(1, @user_id, @amount_int, @streamer);
+                
+                SET @last_id_in_userBalance = LAST_INSERT_ID();
+                
+                select idPaymentTransactions into @last_id_in_paymentTransactions from userBalance where idUserBalance=LAST_INSERT_ID();
                 
                 select username into @username from users where idUser=@user_id;
                 
-				SET @last_id_in_userBalance = LAST_INSERT_ID();
-                
-                select idPaymentTransactions into @last_id_in_paymentTransactions from userBalance where idUserBalance=LAST_INSERT_ID();
-		
-				select amount into @amount from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-		
-				select checksum into @checksum_1 from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-                
                 set @ipAddress = concat(floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()),".",floor(9999*RAND()));
-                
-				select computerName into @compName from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
-                
-				select description into @description from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
+				
+                select amount,computerName, description, checksum into @amount,@compName, @description, @checksum_1 from paymentAttempts WHERE idPaymentAttempts=@last_id_in_paymentAttempts;
 				
                 set @message= concat("Hola bro, salu2 te desea ", @username);
                 
@@ -257,7 +254,6 @@ BEGIN
 				SET referenceID=@last_id_in_donations, amount=@amount,checksum=@checksum_1, ipAddress=@ipAddress,computerName=@compName,description=@description, idUser=@user_id
 				WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
 				
-				SELECT idChannel into @channel_id FROM Channel ORDER BY RAND() LIMIT 1;
                 SELECT postTime, checksum into @post_time, @checksum FROM paymentTransactions WHERE idPaymentTransactions=@last_id_in_paymentTransactions;
                 insert into donationsPerUser(idUser, idDonations, idChannel, postTime, checksum)
                 values (@user_id, @last_id_in_donations, @channel_id, @post_time, @checksum_1);
@@ -274,7 +270,7 @@ DROP PROCEDURE IF EXISTS paymentTran;
 
 delimiter &&
 
-CREATE PROCEDURE paymentTran(IN opt int, in userID BIGINT, in amount INT)
+CREATE PROCEDURE paymentTran(IN opt int, in userID BIGINT, in amount INT, in streamer bigint)
 BEGIN
 
     select date_format(
@@ -304,8 +300,8 @@ BEGIN
 		set @tsubtype=1;
   end case;
   
-  insert into paymentTransactions(`postTime`,`description`,`computerName`, `ipAddress`,`checksum`,`amount`,`idUser`,`idTransactionType`,`idTransactionSubType`)
-  values (@post_time, @description, @compName, @ipAddress, @checksum_1,@amount,@user_id,@ttype, @tsubtype);
+  insert into paymentTransactions(`postTime`,`description`,`computerName`, `ipAddress`,`checksum`,`amount`,`idStreamer`,`idUser`,`idTransactionType`,`idTransactionSubType`)
+  values (@post_time, @description, @compName, @ipAddress, @checksum_1,@amount,streamer,@user_id,@ttype, @tsubtype);
   
   SET @last_id_in_paymentTransactions = LAST_INSERT_ID();
   
@@ -315,7 +311,7 @@ BEGIN
   set @xtreamAmount=@amount-@userAmount;
   
   insert into userBalance (`amount`,`checksum`,`lastUpdate`,`percentageEarned`,`idUser`,`idPaymentTransactions`)
-  values (@userAmount, @checksum_1,@post_time,@userPercentage,@user_id,@last_id_in_paymentTransactions), (@xtreamAmount, @checksum_1,@post_time,@plataformPercentage,1,@last_id_in_paymentTransactions);
+  values (@userAmount, @checksum_1,@post_time,@userPercentage,streamer,@last_id_in_paymentTransactions), (@xtreamAmount, @checksum_1,@post_time,@plataformPercentage,1,@last_id_in_paymentTransactions);
   
 END &&
 
@@ -340,7 +336,7 @@ BEGIN
        
 	set @user_id = userID;
     SELECT idMerchants INTO @merch FROM merchants ORDER BY RAND() LIMIT 1;
-    SELECT idPaymentStatus INTO @status FROM paymentStatus ORDER BY RAND() LIMIT 1;
+    SELECT idPaymentStatus INTO @status FROM paymentStatus where idPaymentStatus<>4 ORDER BY RAND() LIMIT 1;
     
     select username into @user from users where idUser=@user_id;
     
