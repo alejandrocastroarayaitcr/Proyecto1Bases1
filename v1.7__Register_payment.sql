@@ -26,6 +26,9 @@ BEGIN
  end if;
   GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, 
   @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+  UPDATE paymentStatus
+  SET paymentStatus.name = 'Failed'
+  WHERE paymentStatus.idPaymentStatus = @payment_status;
  SET @full_error = ("ERROR al registrar el pago. Se ha hecho rollback.");
  SELECT @full_error as mensaje_error;
  END;
