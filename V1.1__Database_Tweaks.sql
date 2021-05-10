@@ -87,7 +87,9 @@ values(11,"Lolito", "Jejeje yepas jeje", "https://images.app.goo.gl/cpDD8XVikgPn
 
 insert into categories (`name`)
 values ("Legue Of Legends"), ("The Binding Of Isaac"), ("Warzone"), ("Genshi Impact"), ("Just Talking"), ("ASMR"), ("Free Fire"), ("Clash Royale"), ("Mongos"), 
-("Betrayel.io"), ("Valorant"),("Fortnie"),("Agar.io"),("Pinturillo"), ("Omegle"), ("Blog en Vivo"), ("Programación");
+("Betrayel.io"), ("Valorant"),("Fortnie"),("Agar.io"),("Pinturillo"), ("Omegle"), ("Blog en Vivo"), ("Programación")
+, ("GTA V"), ("Minecraft"), ("Resident Evil Village"), ("MOBA & Strategy"), ("Role Playing"), ("Horror")
+, ("Card & Board Games"), ("Fighting"), ("Rocket League"), ("FIFA 21"), ("Teamfight Tactics"), ("Mario Party 3");
 
 insert into tags (`name`)
 values ("RPG"), ("Shooter"), ("Random"), ("Blog"), ("Funny"), ("Girl"), ("Mobile"), ("Acción"), ("MOBA"), 

@@ -3,6 +3,7 @@ package com.xtream.api;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,10 +73,13 @@ public abstract class SPInvoker<Model> {
     protected void execute(String procedure, Model model){
         Session session = sessionFactory.openSession();
 
+        session.beginTransaction();
         Query query = session.createSQLQuery(getSPSQL(procedure));
 
         procedures.get(procedure).setParams(query, model);
 
+        query.executeUpdate();
+        session.getTransaction().commit();
         session.close();
     }
 
