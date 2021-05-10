@@ -1,3 +1,5 @@
+USE XtreamDB;
+
 -- fill data procedure para llenar la base de datos con información
 DROP PROCEDURE IF EXISTS filldata;
 

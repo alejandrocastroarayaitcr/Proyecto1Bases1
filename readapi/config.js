@@ -1,5 +1,5 @@
 let config = {
-    host    : 'db',
+    host    : '',
     user    : 'root',
     password: '123456',
     database: 'XtreamDB'
