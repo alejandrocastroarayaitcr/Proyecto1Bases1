@@ -30,7 +30,7 @@ function DonationsFor(props){
     return (
         <div className="donations-for-container">
             <p className="title"><strong>Ver todas las donaciones para el canal: </strong></p>
-            <input type = "text" value = {donationsFor} onChange={(e) => inputChange(e)} placeholder = "Nombre del canal" />
+            <input type = "text" value = {queryParam} onChange={(e) => inputChange(e)} placeholder = "Nombre del canal" />
             <button className = "fetch-button" onClick={(e) => fetchData(e)}>
                 Submit 
             </button>
