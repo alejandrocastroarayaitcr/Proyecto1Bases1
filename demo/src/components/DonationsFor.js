@@ -41,8 +41,9 @@ function DonationsFor(props){
 
             return (
               <div className="donation" key={index}>
-                <h2>{"Nombre de canal: " + donation.ChannelName}</h2>
-                <h2>{"Suma total de todas sus donaciones: " + donation.SumDonationsReceived}</h2>
+                <p className="sub-title"><strong>Nombre de canal: </strong>{donation.ChannelName}</p>
+                <p className="sub-title"><strong>Suma total de todas sus donaciones: 
+                    </strong>{donation.SumDonationsReceived}</p>
               </div>
             );
           })}

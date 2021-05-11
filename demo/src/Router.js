@@ -1,5 +1,6 @@
 import Home from './pages/Home';
 import Donations from './pages/Donations';
+import Refunds from './pages/Refunds';
 import Header from './components/Header'
 import { useState } from 'react';
 
@@ -9,6 +10,7 @@ function Router(props){
 
     page.set("HOME", (<Home/>))
     page.set("MONEY", (<Donations/>))
+    page.set("REFUND", (<Refunds/>))
 
     return (
         <>   
