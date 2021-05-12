@@ -30,6 +30,7 @@ public abstract class SPInvoker<Model> {
      * @param type the class type of model
      * @return a <code>List<Model></code> a generic type with the fetch result
      */
+    @SuppressWarnings("unchecked")
     protected List<Model> executeAndGetResults(String procedure, Model model, Class<Model> type){
         Session session = sessionFactory.openSession();
 
