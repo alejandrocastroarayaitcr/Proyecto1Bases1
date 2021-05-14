@@ -78,4 +78,14 @@ end if;
 END $$
 DELIMITER ;
 
-CALL registrar_suscripcion('Tier one subscription','LolitoFNDZ','Yuen777','Walmart','Tier one','subscription by LolitoFNDZ',current_time(),'$',5.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);
+-- Aqui registra correctamente la subscripcion
+-- CALL registrar_suscripcion('Tier one subscription','LolitoFNDZ','Yuen777','Walmart','Tier one','subscription by LolitoFNDZ',current_time(),'$',5.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);
+-- SELECT * FROM subscriptions;
+
+-- Aqui hay un error en el ultimo paso (al registrar la subscripcion) para demostrar que no se hace commit parcial a register_payment y a register_transaction
+-- CALL registrar_suscripcion('Tier seven','LolitoFNDZ','Yuen777','Walmart','Tier one','subscription by LolitoFNDZ',current_time(),'$',5.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);
+-- SELECT * FROM subscriptions;
+
+-- Aqui hay un error en register_payment
+-- CALL registrar_suscripcion('Tier one','Vegeta999','Yuen777','Walmart','Tier one','subscription by LolitoFNDZ',current_time(),'$',5.0,'subscription','tier one subscription','AlePC','127.0.0.1',0);
+-- SELECT * FROM paymentAttempts;
