@@ -1,0 +1,65 @@
+version: '3.3'
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'XtreamDB'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'root'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: '123456'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: '123456'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    networks:
+      - appnetwork
+    volumes:
+      - my-db:/var/lib/mysql
+    
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: node-mysql-app
+    depends_on:
+      - db
+    command: bash -c 'while !</dev/tcp/db/3306; do sleep 1; done; npm start'
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    networks:
+      - appnetwork
+
+  javaapi:
+    restart: on-failure
+    build:
+      context: ../api_java/.
+      dockerfile: ../api_java/Dockerfile
+    expose:
+      - "8080"
+    ports:
+      - 8080:8080
+    environment:
+      WAIT_HOSTS: mysql:3306
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    networks:
+      - appnetwork
+# Names our volume
+volumes:
+  my-db:
+networks:
+  appnetwork:
+    driver: bridge
