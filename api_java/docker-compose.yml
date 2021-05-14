@@ -1,4 +1,3 @@
-version: '3.3'
 services:
   db:
     image: mysql
@@ -24,40 +23,6 @@ services:
       - appnetwork
     volumes:
       - my-db:/var/lib/mysql
-    
-  app:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    image: node-mysql-app
-    depends_on:
-      - db
-    command: bash -c 'while !</dev/tcp/db/3306; do sleep 1; done; npm start'
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    tty: true
-    networks:
-      - appnetwork
-
-  javaapi:
-    restart: on-failure
-    build:
-      context: ../api_java/.
-      dockerfile: ../api_java/Dockerfile
-    expose:
-      - "8080"
-    ports:
-      - 8080:8080
-    environment:
-      WAIT_HOSTS: mysql:3306
-    depends_on:
-      - db
-    stdin_open: true
-    tty: true
-    networks:
-      - appnetwork
-# Names our volume
 volumes:
   my-db:
 networks:

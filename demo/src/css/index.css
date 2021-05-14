@@ -136,7 +136,7 @@ li {
   font-size: 1.2em;
 }
 
-.channel-item:hover, .category:hover, .menu li:hover, .donations-item:hover{
+.channel-item:hover, .category:hover, .menu li:hover, .donations-item:hover, .donation:hover{
   cursor: pointer;
   filter: brightness(96%);
   transform: scale(1.1);
@@ -169,7 +169,7 @@ li {
   box-sizing: border-box;
 }
 
-.channel-item, .donations-item{
+.channel-item, .donations-item, .donation{
   background: white;
   width: 100%;
   box-sizing: border-box;
@@ -192,7 +192,7 @@ li {
   box-sizing: border-box;
 }
 
-input {
+input, select {
   border: none;
   padding: 10px 20px;
   font-size: 1.5em;
@@ -204,4 +204,27 @@ input {
 
 .donations-items{
   box-sizing: border-box;
+}
+
+.fetch-button{
+  outline: none;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2em;
+  color: white;
+  margin-left: 20px;
+  box-sizing: border-box;
+  box-shadow: 0px 3px 10px var(--primary-color-shadow);
+  background: var(--primary-color);
+}
+
+.fetch-button:hover{
+  background-color: var(--primary-dark-color);
+}
+
+.donation{
+  margin: 10px 20px;
+  box-sizing: border-box;
+  width: 90%;
 }

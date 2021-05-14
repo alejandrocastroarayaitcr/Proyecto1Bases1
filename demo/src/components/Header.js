@@ -1,5 +1,3 @@
-import MoneyIcon from '../images/money.svg'
-
 function Header(props){
     return(
       <div>
@@ -10,6 +8,7 @@ function Header(props){
         <ul className="menu">
           <li onClick={()=>{redirect(props.setPage, "HOME")}}>Home</li>
           <li onClick={()=>{redirect(props.setPage, "MONEY")}}>Donaciones</li>
+          <li onClick={()=>{redirect(props.setPage, "REFUND")}}>Reembolsos</li>
         </ul>
       </div>
         )

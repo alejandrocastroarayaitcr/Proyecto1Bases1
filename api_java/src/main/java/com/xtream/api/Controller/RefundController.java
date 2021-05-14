@@ -14,19 +14,27 @@ public class RefundController {
     private RefundService refundService;
 
     @PostMapping("/api/refund")
-    public ResponseEntity refund(@RequestBody ChangeStatus status){
-        if (!status.isValidTransaction()) return ResponseEntity.badRequest().body("Transaction number can not be null...");
+    public ResponseEntity refund(@RequestBody ChangeStatus status) {
+        if (!status.isValidTransaction()) return ResponseEntity.badRequest().body("{\"error\": \"Esa transaccion no puede ser nula...\"}");
 
-        refundService.refund(status);
+        try{
+            refundService.refund(status);
+        }catch (Exception ex){
+            return ResponseEntity.badRequest().body("{\"error\": \"Esa transaccion no existe...\"}");
+        }
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/change_status")
     public ResponseEntity changeStatus(@RequestBody ChangeStatus status){
-        if (!status.isValidTransaction()) return ResponseEntity.badRequest().body("Transaction number can not be null...");
+        if (!status.isValidTransaction()) return ResponseEntity.badRequest().body("{\"error\": \"Esa transaccion no puede ser nula...\"}");
 
-        refundService.changeStatus(status);
+        try{
+            refundService.changeStatus(status);
+        }catch (Exception ex){
+            return ResponseEntity.badRequest().body("{\"error\": \"Esa transaccion no existe...\"}");
+        }
 
         return ResponseEntity.ok().build();
     }
