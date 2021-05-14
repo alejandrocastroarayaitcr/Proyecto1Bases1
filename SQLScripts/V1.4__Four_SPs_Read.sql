@@ -22,15 +22,10 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid channel name!';
 	end if;
 
-    SELECT ChannelName, SUM(DonationAmount) SumDonationsReceived FROM all_donations_per_channel WHERE ChannelID = @channel_id; 
+    SELECT ChannelName, SUM(DonationAmount) SumDonationsReceived FROM all_donations_per_channel WHERE ChannelID = @channelID; 
 
 END$$
 DELIMITER ;
-
--- Select * from all_donations_per_channel;
--- CALL donations_for_channel("Florentinoo");
-
-
 
 -- SP #2
 -- Top live streams for one specific category in order
