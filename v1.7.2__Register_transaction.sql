@@ -59,5 +59,5 @@ end if;
 
 END $$
 DELIMITER ;
-  CALL registrar_transaccion('Tier one subscription','LolitoFNDZ','$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier 4 subscription',0);
-  SELECT * FROM paymentTransactions;
+ -- CALL registrar_transaccion('Tier one subscription','LolitoFNDZ','$','this is a transaction',5.0,'AlePC','127.0.0.1','subscription','tier 4 subscription',0);
+ -- SELECT * FROM paymentTransactions;
